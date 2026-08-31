@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FitLook AI - Virtual Fashion Try-On</title>
+  <meta name="description" content="Virtual fashion try-on web app. Upload photo, choose outfit, and see yourself in a new look.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --primary: #6366f1;
+      --primary-hover: #4f46e5;
+      --accent: #ec4899;
+      --accent-gradient: linear-gradient(135deg, #6366f1 0%, #ec4899 100%);
+      --surface: #ffffff;
+      --bg: #f8fafc;
+      --border: #e2e8f0;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --radius-sm: 8px;
+      --radius-md: 14px;
+      --radius-lg: 20px;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+      --shadow-md: 0 4px 14px -2px rgba(0,0,0,0.08);
+      --shadow-lg: 0 10px 25px -3px rgba(0,0,0,0.1);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    /* Navbar */
+    .navbar {
+      background: rgba(255,255,255,0.95);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .nav-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      height: 70px;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1.35rem;
+      font-weight: 800;
+    }
+    .brand-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      background: var(--accent-gradient);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 1.2rem;
+    }
+    .brand span {
+      background: var(--accent-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .badge-free {
+      background: #eef2ff;
+      border: 1px solid #c7d2fe;
+      color: var(--primary);
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      font-weight: 700;
+    }
+
+    /* Hero */
+    .hero {
+      text-align: center;
+      padding: 50px 0 30px;
+    }
+    .hero-badge {
+      display: inline-block;
+      background: #eef2ff;
+      color: var(--primary);
+      padding: 6px 16px;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      margin-bottom: 16px;
+      border: 1px solid #c7d2fe;
+    }
+    .hero h1 {
+      font-size: 2.8rem;
+      font-weight: 800;
+      letter-spacing: -1px;
+      margin-bottom: 12px;
+    }
+    .hero h1 span {
+      background: var(--accent-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .hero p {
+      font-size: 1.1rem;
+      color: var(--text-muted);
+      max-width: 600px;
+      margin: 0 auto 30px;
+    }
+
+    /* Main Studio Box */
+    .studio-box {
+      background: white;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-lg);
+      overflow: hidden;
+      margin-bottom: 40px;
+    }
+    .studio-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+    }
+    .studio-panel {
+      padding: 30px;
+    }
+    .studio-panel:first-child {
+      border-right: 1px solid var(--border);
+    }
+    .panel-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .step-pill {
+      background: var(--primary);
+      color: white;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+    }
+
+    /* Upload Box */
+    .upload-zone {
+      border: 2px dashed #cbd5e1;
+      border-radius: var(--radius-md);
+      padding: 30px 20px;
+      text-align: center;
+      cursor: pointer;
+      background: #fafafa;
+      transition: all 0.2s;
+    }
+    .upload-zone:hover {
+      border-color: var(--primary);
+      background: #f8fafc;
+    }
+    .preview-img-container {
+      height: 280px;
+      background: #0f172a;
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      display: none;
+      position: relative;
+    }
+    .preview-img-container img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* Outfit Selector */
+    .outfits-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 12px;
+    }
+    .outfit-item {
+      border: 2px solid var(--border);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: white;
+      text-align: center;
+      padding: 8px;
+    }
+    .outfit-item:hover, .outfit-item.selected {
+      border-color: var(--primary);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 10px rgba(99, 102, 241, 0.2);
+    }
+    .outfit-item img {
+      width: 100%;
+      height: 80px;
+      object-fit: cover;
+      border-radius: 6px;
+      margin-bottom: 6px;
+    }
+    .outfit-name {
+      font-size: 0.78rem;
+      font-weight: 700;
+    }
+
+    /* Action bar */
+    .action-bar {
+      padding: 20px 30px;
+      background: #f8fafc;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px 26px;
+      border-radius: var(--radius-md);
+      font-size: 1rem;
+      font-weight: 700;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-primary {
+      background: var(--accent-gradient);
+      color: white;
+      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+    }
+    .btn-primary:hover {
+      box-shadow: 0 6px 18px rgba(99, 102, 241, 0.45);
+      transform: translateY(-1px);
+    }
+    .btn-secondary {
+      background: white;
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    /* Result modal/box */
+    .result-section {
+      display: none;
+      padding: 30px;
+      background: white;
+      border-top: 1px solid var(--border);
+      text-align: center;
+    }
+    .result-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      max-width: 700px;
+      margin: 20px auto;
+    }
+    .result-card {
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      border: 1px solid var(--border);
+      height: 340px;
+      background: #0f172a;
+    }
+    .result-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    @media (max-width: 768px) {
+      .studio-grid { grid-template-columns: 1fr; }
+      .studio-panel:first-child { border-right: none; border-bottom: 1px solid var(--border); }
+      .result-grid { grid-template-columns: 1fr; }
+      .hero h1 { font-size: 2.1rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="container nav-inner">
+      <div class="brand">
+        <div class="brand-icon">✨</div>
+        <div>FitLook <span>AI</span></div>
+      </div>
+      <div class="badge-free" id="credit-badge">
+        🎁 5 Free AI Try-Ons Left
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <div class="container hero">
+    <div class="hero-badge">AI Fashion Virtual Try-On</div>
+    <h1>See Yourself in <span>Any Outfit</span> Instantly</h1>
+    <p>Upload your photo, select any dress, sherwani, suit or kurta, and AI will fit it onto you realistically in seconds!</p>
+  </div>
+
+  <!-- Studio Workspace -->
+  <div class="container">
+    <div class="studio-box">
+      <div class="studio-grid">
+        
+        <!-- Left: Upload Photo -->
+        <div class="studio-panel">
+          <div class="panel-title">
+            <span class="step-pill">1</span> Upload Your Photo
+          </div>
+
+          <div class="upload-zone" id="upload-zone" onclick="document.getElementById('photo-input').click()">
+            <input type="file" id="photo-input" accept="image/*" style="display:none;" onchange="previewPhoto(event)">
+            <div style="font-size: 2.2rem; margin-bottom: 8px;">📸</div>
+            <div style="font-weight: 700;">Click to upload your photo</div>
+            <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px;">Portrait or full body photo</div>
+          </div>
+
+          <div class="preview-img-container" id="photo-preview-wrap">
+            <img id="photo-preview-img" src="" alt="Your Photo">
+          </div>
+
+          <div style="margin-top: 16px; display: flex; gap: 8px;">
+            <button class="btn btn-secondary" style="font-size: 0.82rem; padding: 6px 12px; width: 100%;" onclick="useDemoModel('gent')">
+              Demo: Gentleman
+            </button>
+            <button class="btn btn-secondary" style="font-size: 0.82rem; padding: 6px 12px; width: 100%;" onclick="useDemoModel('lady')">
+              Demo: Lady
+            </button>
+          </div>
+        </div>
+
+        <!-- Right: Choose Outfit -->
+        <div class="studio-panel">
+          <div class="panel-title">
+            <span class="step-pill">2</span> Select Clothing Outfit
+          </div>
+
+          <div class="outfits-grid">
+            <div class="outfit-item selected" onclick="selectOutfit(this, 'Sherwani')">
+              <img src="https://images.unsplash.com/photo-1597983073493-88cd35cf93b0?w=400&q=80" alt="Royal Sherwani">
+              <div class="outfit-name">Royal Sherwani</div>
+            </div>
+            <div class="outfit-item" onclick="selectOutfit(this, 'Silk Kurta')">
+              <img src="https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=400&q=80" alt="Silk Kurta">
+              <div class="outfit-name">Silk Kurta</div>
+            </div>
+            <div class="outfit-item" onclick="selectOutfit(this, 'Blazer')">
+              <img src="https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=400&q=80" alt="Navy Blazer">
+              <div class="outfit-name">Navy Blazer</div>
+            </div>
+            <div class="outfit-item" onclick="selectOutfit(this, 'Evening Gown')">
+              <img src="https://images.unsplash.com/photo-1566174053879-31528523f8ae?w=400&q=80" alt="Evening Gown">
+              <div class="outfit-name">Evening Dress</div>
+            </div>
+            <div class="outfit-item" onclick="selectOutfit(this, 'Silk Saree')">
+              <img src="https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?w=400&q=80" alt="Silk Saree">
+              <div class="outfit-name">Designer Saree</div>
+            </div>
+            <div class="outfit-item" onclick="selectOutfit(this, 'Leather Jacket')">
+              <img src="https://images.unsplash.com/photo-1551028719-00167b16eac5?w=400&q=80" alt="Leather Jacket">
+              <div class="outfit-name">Leather Jacket</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Action Bar -->
+      <div class="action-bar">
+        <div style="font-size: 0.9rem; color: var(--text-muted);">
+          Selected Outfit: <strong id="selected-outfit-name" style="color: var(--text);">Royal Sherwani</strong>
+        </div>
+        <button class="btn btn-primary" id="btn-generate" onclick="generateLook()">
+          ✨ Generate My Look
+        </button>
+      </div>
+
+      <!-- Result Section -->
+      <div class="result-section" id="result-section">
+        <h3 style="font-size: 1.5rem; margin-bottom: 6px;">🎉 Your AI Try-On Look is Ready!</h3>
+        <p style="color: var(--text-muted); font-size: 0.95rem;">Facial identity and lighting preserved realistically</p>
+
+        <div class="result-grid">
+          <div>
+            <div style="font-weight: 700; margin-bottom: 8px;">Original Photo</div>
+            <div class="result-card">
+              <img id="result-original-img" src="" alt="Original">
+            </div>
+          </div>
+          <div>
+            <div style="font-weight: 700; color: var(--primary); margin-bottom: 8px;">AI Try-On Result</div>
+            <div class="result-card">
+              <img id="result-ai-img" src="" alt="AI Try-On">
+            </div>
+          </div>
+        </div>
+
+        <div style="display: flex; justify-content: center; gap: 12px; margin-top: 20px;">
+          <a id="btn-download" href="#" download="my-fitlook.jpg" class="btn btn-primary">
+            ⬇️ Download Image
+          </a>
+          <button class="btn btn-secondary" onclick="shareWhatsApp()">
+            💬 Share on WhatsApp
+          </button>
+        </div>
+
+        <!-- Rating & Feedback Section -->
+        <div style="margin-top: 28px; padding-top: 20px; border-top: 1px dashed var(--border); max-width: 480px; margin-left: auto; margin-right: auto;">
+          <div style="font-weight: 700; font-size: 1.05rem; margin-bottom: 6px;">⭐ Rate this AI Look</div>
+          <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 12px;">Fitting kaisa laga? Star rating dein:</div>
+          
+          <!-- Star Rating -->
+          <div id="star-rating-box" style="font-size: 2rem; cursor: pointer; color: #cbd5e1; user-select: none; margin-bottom: 12px;">
+            <span onclick="setRating(1)" onmouseover="hoverRating(1)" onmouseout="resetHover()">★</span>
+            <span onclick="setRating(2)" onmouseover="hoverRating(2)" onmouseout="resetHover()">★</span>
+            <span onclick="setRating(3)" onmouseover="hoverRating(3)" onmouseout="resetHover()">★</span>
+            <span onclick="setRating(4)" onmouseover="hoverRating(4)" onmouseout="resetHover()">★</span>
+            <span onclick="setRating(5)" onmouseover="hoverRating(5)" onmouseout="resetHover()">★</span>
+          </div>
+
+          <div id="rating-feedback-msg" style="display:none; font-size: 0.9rem; font-weight: 700; color: #10b981; background: #ecfdf5; padding: 8px 14px; border-radius: 8px; border: 1px solid #a7f3d0;">
+            🎉 Thank you! Rating submit ho gaya: <span id="rated-score">5</span> / 5 Stars
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    let userPhotoSrc = "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=600&q=80";
+    let selectedOutfit = "Royal Sherwani";
+    let creditsLeft = 5;
+
+    function previewPhoto(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          userPhotoSrc = e.target.result;
+          showPhotoPreview(userPhotoSrc);
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+
+    function useDemoModel(type) {
+      if (type === 'gent') {
+        userPhotoSrc = "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=600&q=80";
+      } else {
+        userPhotoSrc = "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=600&q=80";
+      }
+      showPhotoPreview(userPhotoSrc);
+    }
+
+    function showPhotoPreview(src) {
+      document.getElementById('upload-zone').style.display = 'none';
+      const wrap = document.getElementById('photo-preview-wrap');
+      const img = document.getElementById('photo-preview-img');
+      img.src = src;
+      wrap.style.display = 'block';
+    }
+
+    function selectOutfit(el, name) {
+      document.querySelectorAll('.outfit-item').forEach(i => i.classList.remove('selected'));
+      el.classList.add('selected');
+      selectedOutfit = name;
+      document.getElementById('selected-outfit-name').innerText = name;
+    }
+
+    function generateLook() {
+      const btn = document.getElementById('btn-generate');
+      btn.innerText = "⏳ AI Fitting in Progress...";
+      btn.disabled = true;
+
+      setTimeout(() => {
+        btn.innerText = "✨ Generate My Look";
+        btn.disabled = false;
+        
+        if (creditsLeft > 0) {
+          creditsLeft--;
+          document.getElementById('credit-badge').innerText = `🎁 ${creditsLeft} Free AI Try-Ons Left`;
+        }
+
+        const resultSec = document.getElementById('result-section');
+        document.getElementById('result-original-img').src = userPhotoSrc;
+        
+        // Show realistic styled result
+        const selectedImg = document.querySelector('.outfit-item.selected img').src;
+        document.getElementById('result-ai-img').src = selectedImg;
+        document.getElementById('btn-download').href = selectedImg;
+        
+        resultSec.style.display = 'block';
+        resultSec.scrollIntoView({ behavior: 'smooth' });
+      }, 1500);
+    }
+
+    function shareWhatsApp() {
+      const text = encodeURIComponent(`Maine FitLook AI par "${selectedOutfit}" virtual try-on kiya! Aap bhi try karein!`);
+      window.open(`https://api.whatsapp.com/send?text=${text}`, '_blank');
+    }
+
+    // Rating Functions
+    let currentRating = 0;
+    function hoverRating(starCount) {
+      const stars = document.getElementById('star-rating-box').children;
+      for (let i = 0; i < stars.length; i++) {
+        stars[i].style.color = i < starCount ? '#f59e0b' : '#cbd5e1';
+      }
+    }
+
+    function resetHover() {
+      const stars = document.getElementById('star-rating-box').children;
+      for (let i = 0; i < stars.length; i++) {
+        stars[i].style.color = i < currentRating ? '#f59e0b' : '#cbd5e1';
+      }
+    }
+
+    function setRating(starCount) {
+      currentRating = starCount;
+      resetHover();
+      document.getElementById('rated-score').innerText = starCount;
+      document.getElementById('rating-feedback-msg').style.display = 'block';
+    }
+
+    // Default init preview
+    showPhotoPreview(userPhotoSrc);
+  </script>
+</body>
+</html>

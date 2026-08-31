@@ -1,0 +1,7 @@
+{
+  "name": "FitLook AI",
+  "description": "AI-powered virtual clothing try-on application to try outfits on yourself before you buy.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
+

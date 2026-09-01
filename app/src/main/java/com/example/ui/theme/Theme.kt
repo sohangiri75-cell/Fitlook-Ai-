@@ -12,63 +12,36 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 
 private val DarkColorScheme = darkColorScheme(
-    primary = EditorialDarkPrimary,
-    onPrimary = EditorialNavy,
-    primaryContainer = EditorialDarkPrimaryContainer,
-    onPrimaryContainer = Color.White,
-    secondary = EditorialDarkPrimary,
-    onSecondary = EditorialNavy,
-    secondaryContainer = EditorialDarkCard,
-    onSecondaryContainer = EditorialDarkTextPrimary,
-    tertiary = EditorialBlueLight,
+    primary = FitLookPurple,
+    onPrimary = Color.White,
+    primaryContainer = EditorialBlueContainer,
+    onPrimaryContainer = FitLookTextPrimary,
+    secondary = FitLookPink,
+    onSecondary = Color.White,
+    secondaryContainer = FitLookDarkCard,
+    onSecondaryContainer = FitLookTextPrimary,
+    tertiary = FitLookPinkLight,
     onTertiary = Color.White,
-    background = EditorialDarkBg,
-    onBackground = EditorialDarkTextPrimary,
-    surface = EditorialDarkSurface,
-    onSurface = EditorialDarkTextPrimary,
-    surfaceVariant = EditorialDarkCard,
-    onSurfaceVariant = EditorialDarkTextSecondary,
-    outline = EditorialDarkCardBorder,
+    background = FitLookDarkNavyBg,
+    onBackground = FitLookTextPrimary,
+    surface = FitLookDarkSurface,
+    onSurface = FitLookTextPrimary,
+    surfaceVariant = FitLookDarkCard,
+    onSurfaceVariant = FitLookTextSecondary,
+    outline = FitLookDarkCardBorder,
     error = EditorialError,
     onError = Color.White
 )
 
-private val LightColorScheme = lightColorScheme(
-    primary = EditorialBlue,
-    onPrimary = Color.White,
-    primaryContainer = EditorialBlueContainer,
-    onPrimaryContainer = EditorialNavy,
-    secondary = EditorialNavy,
-    onSecondary = Color.White,
-    secondaryContainer = EditorialCardBg,
-    onSecondaryContainer = EditorialTextDark,
-    tertiary = EditorialSubtext,
-    onTertiary = Color.White,
-    background = EditorialBg,
-    onBackground = EditorialTextDark,
-    surface = Color.White,
-    onSurface = EditorialTextDark,
-    surfaceVariant = EditorialCardBg,
-    onSurfaceVariant = EditorialSecondaryText,
-    outline = EditorialCardBorder,
-    error = EditorialError,
-    onError = Color.White
-)
+private val LightColorScheme = DarkColorScheme // Enforce luxury dark theme throughout the app
 
 @Composable
 fun MyApplicationTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
-    dynamicColor: Boolean = false, // Use custom luxury theme by default for fashion vibe
+    darkTheme: Boolean = true, // Default to FitLook AI Dark Premium UI
+    dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
-    val colorScheme = when {
-        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-            val context = LocalContext.current
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-        }
-        darkTheme -> DarkColorScheme
-        else -> LightColorScheme
-    }
+    val colorScheme = DarkColorScheme
 
     MaterialTheme(
         colorScheme = colorScheme,
@@ -76,3 +49,4 @@ fun MyApplicationTheme(
         content = content
     )
 }
+

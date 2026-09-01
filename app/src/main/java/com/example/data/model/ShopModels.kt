@@ -8,24 +8,32 @@ enum class UserMode(val label: String, val description: String) {
         get() = label
 }
 
-enum class ProductCategory(val displayName: String) {
-    SHIRT("Shirt"),
-    T_SHIRT("T-Shirt"),
-    JEANS("Jeans"),
-    TROUSERS("Trousers"),
-    KURTA("Kurta"),
-    SAREE("Saree"),
-    DRESS("Dress"),
-    JACKET("Jacket"),
-    SUIT("Suit"),
-    OTHER("Other");
+enum class ProductCategory(val displayName: String, val emoji: String) {
+    ALL("All Outfits", "✨"),
+    SHERWANI("Sherwanis", "👑"),
+    KURTA("Kurta Sets", "✨"),
+    KURTA_SET("Kurta Sets", "✨"),
+    SHIRT("Shirts", "👔"),
+    T_SHIRT("T-Shirts", "👕"),
+    PANTS("Pants", "👖"),
+    DRESS("Dresses", "👗"),
+    SAREE("Sarees", "🥻"),
+    JACKET("Jackets", "🧥"),
+    BRIDAL_WEAR("Bridal Wear", "👰"),
+    SUIT("Suits & Blazers", "🤵"),
+    OTHER("Other Outfits", "✨");
 
     companion object {
         fun fromString(value: String): ProductCategory {
             return entries.firstOrNull { 
                 it.name.equals(value, ignoreCase = true) || 
                 it.displayName.equals(value, ignoreCase = true) 
-            } ?: OTHER
+            } ?: when (value.uppercase()) {
+                "KURTA" -> KURTA_SET
+                "JEANS", "TROUSERS" -> PANTS
+                "BRIDAL" -> BRIDAL_WEAR
+                else -> OTHER
+            }
         }
     }
 }
@@ -128,17 +136,17 @@ enum class SubscriptionPlan(
 }
 
 enum class AutoDeleteDuration(val minutes: Long, val label: String, val shortLabel: String) {
-    FIVE_MINUTES(5, "5 Minutes", "5m"),
-    TEN_MINUTES(10, "10 Minutes (Recommended)", "10m"),
+    IMMEDIATE(0, "Immediately after Generation", "Instant"),
     ONE_HOUR(60, "1 Hour", "1h"),
-    TWENTY_FOUR_HOURS(1440, "24 Hours", "24h");
+    TWENTY_FOUR_HOURS(1440, "24 Hours (Recommended)", "24h"),
+    TEN_MINUTES(10, "10 Minutes", "10m");
 
     val millis: Long
         get() = minutes * 60 * 1000L
 
     companion object {
         fun fromMinutes(min: Long): AutoDeleteDuration {
-            return entries.firstOrNull { it.minutes == min } ?: TEN_MINUTES
+            return entries.firstOrNull { it.minutes == min } ?: TWENTY_FOUR_HOURS
         }
     }
 }

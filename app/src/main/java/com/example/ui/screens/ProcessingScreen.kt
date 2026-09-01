@@ -23,6 +23,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AutoAwesome
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.ErrorOutline
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Shield
@@ -40,9 +41,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
@@ -50,19 +51,15 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.data.model.TryOnStage
-import com.example.ui.theme.EditorialActiveCard
-import com.example.ui.theme.EditorialBlue
-import com.example.ui.theme.EditorialBlueContainer
-import com.example.ui.theme.EditorialBlueContainerBorder
-import com.example.ui.theme.EditorialBorderSubtle
 import com.example.ui.theme.EditorialCardBg
 import com.example.ui.theme.EditorialCardBorder
-import com.example.ui.theme.EditorialDarkBanner
-import com.example.ui.theme.EditorialDarkBannerIconBg
-import com.example.ui.theme.EditorialNavy
-import com.example.ui.theme.EditorialSecondaryText
-import com.example.ui.theme.EditorialSubtext
-import com.example.ui.theme.EditorialTextDark
+import com.example.ui.theme.EditorialError
+import com.example.ui.theme.FitLookDarkNavyBg
+import com.example.ui.theme.FitLookGradientPrimary
+import com.example.ui.theme.FitLookPink
+import com.example.ui.theme.FitLookPurple
+import com.example.ui.theme.FitLookTextPrimary
+import com.example.ui.theme.FitLookTextSecondary
 
 @Composable
 fun ProcessingScreen(
@@ -84,7 +81,7 @@ fun ProcessingScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
+            .background(FitLookDarkNavyBg)
             .testTag("processing_screen"),
         contentAlignment = Alignment.Center
     ) {
@@ -94,9 +91,9 @@ fun ProcessingScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(24.dp),
-                    shape = RoundedCornerShape(20.dp),
+                    shape = RoundedCornerShape(24.dp),
                     colors = CardDefaults.cardColors(containerColor = EditorialCardBg),
-                    border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFBA1A1A).copy(alpha = 0.4f))
+                    border = androidx.compose.foundation.BorderStroke(1.dp, EditorialError.copy(alpha = 0.4f))
                 ) {
                     Column(
                         modifier = Modifier.padding(24.dp),
@@ -104,33 +101,37 @@ fun ProcessingScreen(
                     ) {
                         Box(
                             modifier = Modifier
-                                .size(64.dp)
+                                .size(68.dp)
                                 .clip(CircleShape)
-                                .background(Color(0xFFBA1A1A).copy(alpha = 0.1f)),
+                                .background(EditorialError.copy(alpha = 0.15f)),
                             contentAlignment = Alignment.Center
                         ) {
                             Icon(
                                 imageVector = Icons.Default.ErrorOutline,
                                 contentDescription = "Error",
-                                tint = Color(0xFFBA1A1A),
+                                tint = EditorialError,
                                 modifier = Modifier.size(36.dp)
                             )
                         }
 
-                        Spacer(modifier = Modifier.height(16.dp))
+                        Spacer(modifier = Modifier.height(18.dp))
 
                         Text(
-                            text = "Processing Failed",
-                            style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
-                            color = EditorialNavy
+                            text = "Unable to generate your AI Look. Please try again.",
+                            style = MaterialTheme.typography.titleMedium.copy(
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 17.sp
+                            ),
+                            color = FitLookTextPrimary,
+                            textAlign = TextAlign.Center
                         )
 
                         Spacer(modifier = Modifier.height(8.dp))
 
                         Text(
                             text = stage.message,
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = EditorialSecondaryText,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = FitLookTextSecondary,
                             textAlign = TextAlign.Center
                         )
 
@@ -143,11 +144,13 @@ fun ProcessingScreen(
                                 .height(50.dp)
                                 .testTag("btn_error_retry"),
                             shape = RoundedCornerShape(14.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = EditorialBlue)
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = FitLookPurple
+                            )
                         ) {
                             Icon(Icons.Default.Refresh, contentDescription = null, tint = Color.White)
                             Spacer(modifier = Modifier.width(8.dp))
-                            Text("Retry Virtual Try-On", color = Color.White, fontWeight = FontWeight.Bold)
+                            Text("Try Again", color = Color.White, fontWeight = FontWeight.Bold, fontSize = 15.sp)
                         }
 
                         Spacer(modifier = Modifier.height(10.dp))
@@ -161,35 +164,45 @@ fun ProcessingScreen(
                             shape = RoundedCornerShape(14.dp),
                             border = androidx.compose.foundation.BorderStroke(1.dp, EditorialCardBorder)
                         ) {
-                            Text("Return to Previous Step", color = EditorialNavy)
+                            Text("Return to Previous Step", color = FitLookTextSecondary)
                         }
                     }
                 }
             }
             else -> {
-                val stageMessage = if (stage is TryOnStage.Processing) stage.stageMessage else "Preparing Your Look..."
-                val progress = if (stage is TryOnStage.Processing) stage.progress else 0.5f
+                val progress = if (stage is TryOnStage.Processing) stage.progress else 0.45f
+                val percent = (progress * 100).toInt().coerceIn(0, 100)
+
+                val stages = listOf(
+                    "Uploading photo..." to 0.20f,
+                    "Analyzing body and pose..." to 0.40f,
+                    "Preparing selected outfit..." to 0.60f,
+                    "Fitting outfit..." to 0.80f,
+                    "Generating realistic look..." to 0.95f
+                )
 
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center,
-                    modifier = Modifier.padding(28.dp)
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(24.dp)
                 ) {
-                    // Pulsing Glowing Ring with AI Icon
+                    // Pulsing Glowing Ring with AI Icon & Purple/Pink Gradient
                     Box(
                         modifier = Modifier
-                            .size(160.dp)
+                            .size(150.dp)
                             .scale(pulseScale)
                             .clip(CircleShape)
-                            .background(EditorialBlueContainer.copy(alpha = 0.5f)),
+                            .background(FitLookPurple.copy(alpha = 0.15f)),
                         contentAlignment = Alignment.Center
                     ) {
                         Box(
                             modifier = Modifier
                                 .size(90.dp)
                                 .clip(CircleShape)
-                                .background(EditorialBlue)
-                                .border(2.dp, Color.White, CircleShape),
+                                .background(FitLookGradientPrimary)
+                                .border(2.dp, Color.White.copy(alpha = 0.8f), CircleShape),
                             contentAlignment = Alignment.Center
                         ) {
                             Icon(
@@ -201,62 +214,130 @@ fun ProcessingScreen(
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(32.dp))
+                    Spacer(modifier = Modifier.height(24.dp))
 
                     Text(
-                        text = stageMessage,
-                        style = MaterialTheme.typography.titleLarge.copy(
-                            fontWeight = FontWeight.Bold,
-                            letterSpacing = 0.5.sp
+                        text = "✨ Creating Your AI Look",
+                        style = MaterialTheme.typography.headlineSmall.copy(
+                            fontWeight = FontWeight.Black,
+                            letterSpacing = (-0.3).sp,
+                            fontSize = 24.sp
                         ),
-                        color = EditorialNavy,
+                        color = Color.White,
                         textAlign = TextAlign.Center
                     )
 
                     Spacer(modifier = Modifier.height(8.dp))
 
-                    Text(
-                        text = "Neural garment warping and lighting match in progress",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = EditorialSecondaryText,
-                        textAlign = TextAlign.Center
-                    )
+                    // Progress percentage badge
+                    Box(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(16.dp))
+                            .background(
+                                Brush.horizontalGradient(
+                                    listOf(FitLookPurple.copy(alpha = 0.25f), FitLookPink.copy(alpha = 0.25f))
+                                )
+                            )
+                            .border(1.dp, FitLookPurple.copy(alpha = 0.4f), RoundedCornerShape(16.dp))
+                            .padding(horizontal = 16.dp, vertical = 6.dp)
+                    ) {
+                        Text(
+                            text = "⏳ $percent%",
+                            style = MaterialTheme.typography.titleMedium.copy(
+                                fontWeight = FontWeight.Black,
+                                fontSize = 16.sp
+                            ),
+                            color = FitLookPink
+                        )
+                    }
 
-                    Spacer(modifier = Modifier.height(24.dp))
+                    Spacer(modifier = Modifier.height(18.dp))
 
-                    // Progress Indicator Bar
+                    // Linear Progress Indicator
                     LinearProgressIndicator(
                         progress = { progress },
                         modifier = Modifier
-                            .fillMaxWidth(0.8f)
-                            .height(8.dp)
-                            .clip(RoundedCornerShape(4.dp)),
-                        color = EditorialBlue,
-                        trackColor = EditorialBlueContainer
+                            .fillMaxWidth(0.85f)
+                            .height(6.dp)
+                            .clip(RoundedCornerShape(3.dp)),
+                        color = FitLookPink,
+                        trackColor = EditorialCardBorder
                     )
+
+                    Spacer(modifier = Modifier.height(20.dp))
+
+                    // Step by step checklist card
+                    Card(
+                        modifier = Modifier.fillMaxWidth(0.92f),
+                        shape = RoundedCornerShape(18.dp),
+                        colors = CardDefaults.cardColors(containerColor = EditorialCardBg),
+                        border = androidx.compose.foundation.BorderStroke(1.dp, EditorialCardBorder)
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(16.dp),
+                            verticalArrangement = Arrangement.spacedBy(10.dp)
+                        ) {
+                            stages.forEach { (stageLabel, stageThreshold) ->
+                                val isDone = progress >= stageThreshold
+                                val isCurrent = progress >= (stageThreshold - 0.20f) && !isDone
+
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    if (isDone) {
+                                        Icon(
+                                            imageVector = Icons.Default.CheckCircle,
+                                            contentDescription = "Done",
+                                            tint = Color(0xFF10B981),
+                                            modifier = Modifier.size(18.dp)
+                                        )
+                                    } else if (isCurrent) {
+                                        CircularProgressIndicator(
+                                            modifier = Modifier.size(18.dp),
+                                            strokeWidth = 2.dp,
+                                            color = FitLookPurple
+                                        )
+                                    } else {
+                                        Box(
+                                            modifier = Modifier
+                                                .size(18.dp)
+                                                .clip(CircleShape)
+                                                .border(1.5.dp, FitLookTextSecondary.copy(alpha = 0.5f), CircleShape)
+                                        )
+                                    }
+
+                                    Spacer(modifier = Modifier.width(12.dp))
+
+                                    Text(
+                                        text = (if (isDone) "✓ " else "") + stageLabel,
+                                        style = MaterialTheme.typography.bodyMedium.copy(
+                                            fontWeight = if (isDone || isCurrent) FontWeight.Bold else FontWeight.Normal,
+                                            fontSize = 14.sp
+                                        ),
+                                        color = if (isDone) Color.White else if (isCurrent) FitLookPink else FitLookTextSecondary
+                                    )
+                                }
+                            }
+                        }
+                    }
 
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    // Security & Auto Delete Reassurance
+                    // Privacy notice
                     Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(20.dp))
-                            .background(EditorialCardBg)
-                            .border(1.dp, EditorialCardBorder, RoundedCornerShape(20.dp))
-                            .padding(horizontal = 14.dp, vertical = 6.dp)
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
                         Icon(
                             imageVector = Icons.Default.Shield,
                             contentDescription = null,
-                            tint = EditorialBlue,
-                            modifier = Modifier.size(16.dp)
+                            tint = FitLookPurple,
+                            modifier = Modifier.size(14.dp)
                         )
                         Spacer(modifier = Modifier.width(6.dp))
                         Text(
-                            text = "Auto-Deletes from server in 24h",
+                            text = "Face, skin tone & posture preserved securely",
                             style = MaterialTheme.typography.labelSmall,
-                            color = EditorialSecondaryText
+                            color = FitLookTextSecondary
                         )
                     }
                 }

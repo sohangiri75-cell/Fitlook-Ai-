@@ -52,6 +52,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
@@ -64,18 +65,17 @@ import com.example.data.model.UserAccount
 import com.example.data.model.UserMode
 import com.example.service.PrivacyService
 import com.example.ui.components.FitLookTopBar
-import com.example.ui.theme.EditorialBlue
-import com.example.ui.theme.EditorialBlueContainer
-import com.example.ui.theme.EditorialBlueContainerBorder
-import com.example.ui.theme.EditorialBorderSubtle
 import com.example.ui.theme.EditorialCardBg
 import com.example.ui.theme.EditorialCardBorder
-import com.example.ui.theme.EditorialDarkBanner
-import com.example.ui.theme.EditorialDarkBannerIconBg
-import com.example.ui.theme.EditorialNavy
-import com.example.ui.theme.EditorialSecondaryText
-import com.example.ui.theme.EditorialSubtext
-import com.example.ui.theme.EditorialTextDark
+import com.example.ui.theme.EditorialError
+import com.example.ui.theme.FitLookDarkNavyBg
+import com.example.ui.theme.FitLookDarkSurface
+import com.example.ui.theme.FitLookGradientPrimary
+import com.example.ui.theme.FitLookPink
+import com.example.ui.theme.FitLookPinkLight
+import com.example.ui.theme.FitLookPurple
+import com.example.ui.theme.FitLookTextPrimary
+import com.example.ui.theme.FitLookTextSecondary
 
 @Composable
 fun ProfilePrivacyScreen(
@@ -94,12 +94,12 @@ fun ProfilePrivacyScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
+            .background(FitLookDarkNavyBg)
             .testTag("profile_privacy_screen")
     ) {
         FitLookTopBar(
-            title = "Profile & Privacy",
-            subtitle = "Security & Account Management"
+            title = "Photo & Privacy Settings",
+            subtitle = "Security & Account Controls"
         )
 
         Column(
@@ -126,13 +126,13 @@ fun ProfilePrivacyScreen(
                         modifier = Modifier
                             .size(52.dp)
                             .clip(CircleShape)
-                            .background(EditorialBlueContainer),
+                            .background(FitLookPurple.copy(alpha = 0.2f)),
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
                             imageVector = if (currentMode == UserMode.CUSTOMER) Icons.Default.Person else Icons.Default.Storefront,
                             contentDescription = null,
-                            tint = EditorialBlue,
+                            tint = FitLookPink,
                             modifier = Modifier.size(28.dp)
                         )
                     }
@@ -146,7 +146,7 @@ fun ProfilePrivacyScreen(
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 17.sp
                             ),
-                            color = EditorialNavy
+                            color = FitLookTextPrimary
                         )
                         Text(
                             text = when (currentUser?.authType) {
@@ -155,7 +155,7 @@ fun ProfilePrivacyScreen(
                                 else -> "Active in ${currentMode.displayName} Mode"
                             },
                             style = MaterialTheme.typography.bodySmall,
-                            color = EditorialBlue
+                            color = FitLookPinkLight
                         )
                     }
                 }
@@ -165,7 +165,7 @@ fun ProfilePrivacyScreen(
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(20.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.White),
+                colors = CardDefaults.cardColors(containerColor = EditorialCardBg),
                 border = androidx.compose.foundation.BorderStroke(1.dp, EditorialCardBorder)
             ) {
                 Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
@@ -178,38 +178,38 @@ fun ProfilePrivacyScreen(
                             Icon(
                                 imageVector = Icons.Default.SwapHoriz,
                                 contentDescription = null,
-                                tint = EditorialBlue,
+                                tint = FitLookPink,
                                 modifier = Modifier.size(20.dp)
                             )
                             Spacer(modifier = Modifier.width(8.dp))
                             Text(
                                 text = "App Experience Mode",
                                 style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
-                                color = EditorialNavy
+                                color = FitLookTextPrimary
                             )
                         }
 
                         Box(
                             modifier = Modifier
                                 .clip(RoundedCornerShape(8.dp))
-                                .background(EditorialBlueContainer)
+                                .background(FitLookPurple.copy(alpha = 0.25f))
                                 .padding(horizontal = 8.dp, vertical = 4.dp)
                         ) {
                             Text(
                                 text = currentMode.displayName,
                                 style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
-                                color = EditorialBlue
+                                color = FitLookPink
                             )
                         }
                     }
 
                     Text(
                         text = if (currentMode == UserMode.CUSTOMER)
-                            "You are browsing in Customer Mode (Virtual try-on on your photos, boutique shopping)."
+                            "You are browsing in Customer Mode (Virtual try-on on your photos, shop catalogue)."
                         else
-                            "You are operating in Shop Owner Mode (Inventory management, sales analytics, QR codes).",
+                            "You are operating in Shopkeeper Mode (Inventory management, sales analytics, add products).",
                         style = MaterialTheme.typography.bodySmall,
-                        color = EditorialSecondaryText
+                        color = FitLookTextSecondary
                     )
 
                     Row(
@@ -221,8 +221,8 @@ fun ProfilePrivacyScreen(
                             modifier = Modifier.weight(1f),
                             shape = RoundedCornerShape(10.dp),
                             colors = ButtonDefaults.buttonColors(
-                                containerColor = if (currentMode == UserMode.CUSTOMER) EditorialBlue else EditorialCardBg,
-                                contentColor = if (currentMode == UserMode.CUSTOMER) Color.White else EditorialNavy
+                                containerColor = if (currentMode == UserMode.CUSTOMER) FitLookPurple else FitLookDarkSurface,
+                                contentColor = if (currentMode == UserMode.CUSTOMER) Color.White else FitLookTextSecondary
                             )
                         ) {
                             Text("Customer Mode", fontWeight = FontWeight.Bold, fontSize = 12.sp)
@@ -233,11 +233,11 @@ fun ProfilePrivacyScreen(
                             modifier = Modifier.weight(1f),
                             shape = RoundedCornerShape(10.dp),
                             colors = ButtonDefaults.buttonColors(
-                                containerColor = if (currentMode == UserMode.SHOP_OWNER) EditorialBlue else EditorialCardBg,
-                                contentColor = if (currentMode == UserMode.SHOP_OWNER) Color.White else EditorialNavy
+                                containerColor = if (currentMode == UserMode.SHOP_OWNER) FitLookPurple else FitLookDarkSurface,
+                                contentColor = if (currentMode == UserMode.SHOP_OWNER) Color.White else FitLookTextSecondary
                             )
                         ) {
-                            Text("Shop Owner", fontWeight = FontWeight.Bold, fontSize = 12.sp)
+                            Text("Shopkeeper Mode", fontWeight = FontWeight.Bold, fontSize = 12.sp)
                         }
                     }
                 }
@@ -247,7 +247,7 @@ fun ProfilePrivacyScreen(
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(20.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.White),
+                colors = CardDefaults.cardColors(containerColor = EditorialCardBg),
                 border = androidx.compose.foundation.BorderStroke(1.dp, EditorialCardBorder)
             ) {
                 Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
@@ -255,21 +255,21 @@ fun ProfilePrivacyScreen(
                         Icon(
                             imageVector = Icons.Default.AutoDelete,
                             contentDescription = null,
-                            tint = EditorialBlue,
+                            tint = FitLookPink,
                             modifier = Modifier.size(20.dp)
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
                             text = "Auto-Delete Photos Duration",
                             style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
-                            color = EditorialNavy
+                            color = FitLookTextPrimary
                         )
                     }
 
                     Text(
-                        text = "Choose how quickly your uploaded photos and generated AI looks are permanently purged from the server.",
+                        text = "Your uploaded photos are used only to generate your AI Try-On result. Photos are automatically deleted according to your selected privacy setting.",
                         style = MaterialTheme.typography.bodySmall,
-                        color = EditorialSecondaryText
+                        color = FitLookTextSecondary
                     )
 
                     Row(
@@ -285,15 +285,15 @@ fun ProfilePrivacyScreen(
                                 onClick = { onSelectAutoDeleteDuration(duration) },
                                 label = { Text(duration.label, fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal) },
                                 colors = FilterChipDefaults.filterChipColors(
-                                    selectedContainerColor = EditorialBlue,
+                                    selectedContainerColor = FitLookPurple,
                                     selectedLabelColor = Color.White,
-                                    containerColor = EditorialCardBg,
-                                    labelColor = EditorialNavy
+                                    containerColor = FitLookDarkSurface,
+                                    labelColor = FitLookTextSecondary
                                 ),
                                 border = FilterChipDefaults.filterChipBorder(
                                     enabled = true,
                                     selected = isSelected,
-                                    borderColor = if (isSelected) EditorialBlue else EditorialBorderSubtle
+                                    borderColor = if (isSelected) FitLookPink else EditorialCardBorder
                                 )
                             )
                         }
@@ -305,8 +305,8 @@ fun ProfilePrivacyScreen(
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(20.dp),
-                colors = CardDefaults.cardColors(containerColor = EditorialDarkBanner),
-                border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFF223555))
+                colors = CardDefaults.cardColors(containerColor = EditorialCardBg),
+                border = androidx.compose.foundation.BorderStroke(1.dp, FitLookPurple.copy(alpha = 0.4f))
             ) {
                 Column(modifier = Modifier.padding(18.dp)) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
@@ -314,13 +314,13 @@ fun ProfilePrivacyScreen(
                             modifier = Modifier
                                 .size(36.dp)
                                 .clip(RoundedCornerShape(10.dp))
-                                .background(EditorialDarkBannerIconBg),
+                                .background(FitLookPurple.copy(alpha = 0.25f)),
                             contentAlignment = Alignment.Center
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Shield,
                                 contentDescription = null,
-                                tint = Color.White,
+                                tint = FitLookPink,
                                 modifier = Modifier.size(20.dp)
                             )
                         }
@@ -335,9 +335,9 @@ fun ProfilePrivacyScreen(
                     Spacer(modifier = Modifier.height(10.dp))
 
                     Text(
-                        text = "“For your privacy, uploaded photos and AI looks are automatically erased from our server after your selected duration.”",
+                        text = "“Your uploaded photos are used only to generate your AI Try-On result. Photos are automatically deleted according to your selected privacy setting.”",
                         style = MaterialTheme.typography.bodyMedium.copy(fontSize = 12.sp, lineHeight = 17.sp),
-                        color = Color(0xFFD4E3FF)
+                        color = FitLookTextSecondary
                     )
 
                     Spacer(modifier = Modifier.height(10.dp))
@@ -346,33 +346,33 @@ fun ProfilePrivacyScreen(
                         onClick = { showPrivacyPolicyDialog = true },
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(10.dp),
-                        border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFF4A658E))
+                        border = androidx.compose.foundation.BorderStroke(1.dp, EditorialCardBorder)
                     ) {
-                        Text("View Complete Privacy Information", color = Color.White, style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold))
+                        Text("View Complete Privacy Information", color = FitLookTextPrimary, style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold))
                     }
                 }
             }
 
-            // IMMEDIATE SERVER PHOTO DELETION (DELETE NOW)
+            // 🗑️ “Delete All My Photos” BUTTON
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(20.dp),
                 colors = CardDefaults.cardColors(containerColor = EditorialCardBg),
-                border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFBA1A1A).copy(alpha = 0.3f))
+                border = androidx.compose.foundation.BorderStroke(1.dp, EditorialError.copy(alpha = 0.3f))
             ) {
                 Column(modifier = Modifier.padding(18.dp)) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(
                             imageVector = Icons.Default.DeleteForever,
                             contentDescription = null,
-                            tint = Color(0xFFBA1A1A),
+                            tint = EditorialError,
                             modifier = Modifier.size(24.dp)
                         )
                         Spacer(modifier = Modifier.width(10.dp))
                         Text(
                             text = "Instant Data Erasure",
                             style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                            color = Color(0xFFBA1A1A)
+                            color = EditorialError
                         )
                     }
 
@@ -381,7 +381,7 @@ fun ProfilePrivacyScreen(
                     Text(
                         text = "Permanently purge all uploaded person photos, clothing images, and AI virtual try-on results right now.",
                         style = MaterialTheme.typography.bodySmall,
-                        color = EditorialSecondaryText
+                        color = FitLookTextSecondary
                     )
 
                     Spacer(modifier = Modifier.height(14.dp))
@@ -393,9 +393,9 @@ fun ProfilePrivacyScreen(
                             .height(48.dp)
                             .testTag("btn_profile_delete_all"),
                         shape = RoundedCornerShape(14.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFBA1A1A))
+                        colors = ButtonDefaults.buttonColors(containerColor = EditorialError)
                     ) {
-                        Text("Delete All Server Data Now", color = Color.White, fontWeight = FontWeight.Bold)
+                        Text("🗑️ Delete All My Photos", color = Color.White, fontWeight = FontWeight.Bold)
                     }
                 }
             }
@@ -411,23 +411,17 @@ fun ProfilePrivacyScreen(
                     Text(
                         text = "FITLOOK AI",
                         style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Black, letterSpacing = 1.sp),
-                        color = EditorialNavy
+                        color = Color.White
                     )
                     Text(
-                        text = "“Try Before You Buy”",
+                        text = "“Try Clothes on My Photo • Realistic AI Try-On”",
                         style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
-                        color = EditorialBlue
+                        color = FitLookPink
                     )
                     Text(
                         text = "“Kapda kharidne se pehle, khud par dekho.”",
                         style = MaterialTheme.typography.labelMedium,
-                        color = EditorialSecondaryText
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        text = "FitLook AI B2B Virtual Try-On & Sales Suite",
-                        style = MaterialTheme.typography.labelSmall,
-                        color = EditorialSecondaryText
+                        color = FitLookTextSecondary
                     )
                 }
             }
@@ -440,11 +434,11 @@ fun ProfilePrivacyScreen(
                     .height(48.dp)
                     .testTag("btn_logout"),
                 shape = RoundedCornerShape(14.dp),
-                border = androidx.compose.foundation.BorderStroke(1.dp, EditorialBorderSubtle)
+                border = androidx.compose.foundation.BorderStroke(1.dp, EditorialCardBorder)
             ) {
-                Icon(Icons.Default.Logout, contentDescription = null, tint = EditorialNavy, modifier = Modifier.size(18.dp))
+                Icon(Icons.Default.Logout, contentDescription = null, tint = FitLookTextSecondary, modifier = Modifier.size(18.dp))
                 Spacer(modifier = Modifier.width(8.dp))
-                Text("Switch User / Log Out", color = EditorialNavy, style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold))
+                Text("Switch User / Log Out", color = FitLookTextPrimary, style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold))
             }
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -454,18 +448,18 @@ fun ProfilePrivacyScreen(
     if (showDeleteConfirmDialog) {
         AlertDialog(
             onDismissRequest = { showDeleteConfirmDialog = false },
-            containerColor = Color.White,
+            containerColor = FitLookDarkSurface,
             title = {
                 Text(
-                    "Permanently Delete All Data?",
-                    style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold, color = EditorialNavy)
+                    "Permanently Delete All Photos?",
+                    style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold, color = Color.White)
                 )
             },
             text = {
                 Text(
-                    text = "This will immediately erase all uploaded photos, clothing garments, and AI virtual try-on results from server storage.",
+                    text = "This will immediately erase all uploaded person photos, clothing garments, and AI virtual try-on results from server storage.",
                     style = MaterialTheme.typography.bodyMedium,
-                    color = EditorialSecondaryText
+                    color = FitLookTextSecondary
                 )
             },
             confirmButton = {
@@ -474,14 +468,14 @@ fun ProfilePrivacyScreen(
                         showDeleteConfirmDialog = false
                         onDeleteAllServerData()
                     },
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFBA1A1A))
+                    colors = ButtonDefaults.buttonColors(containerColor = EditorialError)
                 ) {
                     Text("Delete Everything Now", color = Color.White, fontWeight = FontWeight.Bold)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showDeleteConfirmDialog = false }) {
-                    Text("Cancel", color = EditorialSecondaryText)
+                    Text("Cancel", color = FitLookTextSecondary)
                 }
             }
         )
@@ -490,11 +484,11 @@ fun ProfilePrivacyScreen(
     if (showPrivacyPolicyDialog) {
         AlertDialog(
             onDismissRequest = { showPrivacyPolicyDialog = false },
-            containerColor = Color.White,
+            containerColor = FitLookDarkSurface,
             title = {
                 Text(
                     "Privacy First Commitment",
-                    style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold, color = EditorialNavy)
+                    style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold, color = Color.White)
                 )
             },
             text = {
@@ -502,19 +496,19 @@ fun ProfilePrivacyScreen(
                     Text(
                         text = "At FitLook AI, your photos are your personal property.",
                         style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
-                        color = EditorialNavy
+                        color = Color.White
                     )
                     Text(
                         text = "1. Zero Biometric Reselling: Your face, body measurements, and photos are never sold, indexed, or shared with third parties.\n2. Configurable Auto-Delete: Every file is automatically destroyed when your chosen timer expires.\n3. Complete User Control: You can purge all data on-demand at any time.",
                         style = MaterialTheme.typography.bodySmall.copy(lineHeight = 18.sp),
-                        color = EditorialSecondaryText
+                        color = FitLookTextSecondary
                     )
                 }
             },
             confirmButton = {
                 Button(
                     onClick = { showPrivacyPolicyDialog = false },
-                    colors = ButtonDefaults.buttonColors(containerColor = EditorialBlue)
+                    colors = ButtonDefaults.buttonColors(containerColor = FitLookPurple)
                 ) {
                     Text("Understood", color = Color.White)
                 }
@@ -522,3 +516,4 @@ fun ProfilePrivacyScreen(
         )
     }
 }
+

@@ -45,6 +45,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
@@ -56,15 +57,16 @@ import com.example.data.model.ProductItem
 import com.example.data.model.ShopAnalytics
 import com.example.data.model.ShopProfile
 import com.example.ui.components.SmartImage
-import com.example.ui.theme.EditorialBlue
-import com.example.ui.theme.EditorialBlueContainer
-import com.example.ui.theme.EditorialBorderSubtle
 import com.example.ui.theme.EditorialCardBg
 import com.example.ui.theme.EditorialCardBorder
-import com.example.ui.theme.EditorialDarkBanner
-import com.example.ui.theme.EditorialNavy
-import com.example.ui.theme.EditorialSecondaryText
-import com.example.ui.theme.EditorialSubtext
+import com.example.ui.theme.FitLookDarkNavyBg
+import com.example.ui.theme.FitLookDarkSurface
+import com.example.ui.theme.FitLookGradientPrimary
+import com.example.ui.theme.FitLookPink
+import com.example.ui.theme.FitLookPinkLight
+import com.example.ui.theme.FitLookPurple
+import com.example.ui.theme.FitLookTextPrimary
+import com.example.ui.theme.FitLookTextSecondary
 
 @Composable
 fun ShopDashboardScreen(
@@ -81,14 +83,14 @@ fun ShopDashboardScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
+            .background(FitLookDarkNavyBg)
             .verticalScroll(rememberScrollState())
             .testTag("shop_dashboard_screen")
     ) {
         // Shop Identity Banner
         Surface(
-            color = Color.White,
-            shadowElevation = 1.dp,
+            color = EditorialCardBg,
+            shadowElevation = 2.dp,
             modifier = Modifier.fillMaxWidth()
         ) {
             Column(modifier = Modifier.padding(16.dp)) {
@@ -105,7 +107,7 @@ fun ShopDashboardScreen(
                             modifier = Modifier
                                 .size(52.dp)
                                 .clip(RoundedCornerShape(14.dp))
-                                .border(1.dp, EditorialBorderSubtle, RoundedCornerShape(14.dp))
+                                .border(1.dp, EditorialCardBorder, RoundedCornerShape(14.dp))
                         ) {
                             SmartImage(
                                 uriString = shopProfile.logoUri,
@@ -118,20 +120,20 @@ fun ShopDashboardScreen(
                             Text(
                                 text = shopProfile.name,
                                 style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                                color = EditorialNavy
+                                color = FitLookTextPrimary
                             )
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Icon(
                                     imageVector = Icons.Default.LocationOn,
                                     contentDescription = null,
-                                    tint = EditorialSubtext,
+                                    tint = FitLookPink,
                                     modifier = Modifier.size(14.dp)
                                 )
                                 Spacer(modifier = Modifier.width(4.dp))
                                 Text(
                                     text = shopProfile.location,
                                     style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
-                                    color = EditorialSecondaryText
+                                    color = FitLookTextSecondary
                                 )
                             }
                         }
@@ -142,12 +144,12 @@ fun ShopDashboardScreen(
                         modifier = Modifier
                             .size(36.dp)
                             .clip(CircleShape)
-                            .background(EditorialCardBg)
+                            .background(FitLookDarkSurface)
                     ) {
                         Icon(
                             imageVector = Icons.Default.Edit,
                             contentDescription = "Edit Profile",
-                            tint = EditorialNavy,
+                            tint = FitLookPink,
                             modifier = Modifier.size(18.dp)
                         )
                     }
@@ -160,19 +162,19 @@ fun ShopDashboardScreen(
                     onClick = onSwitchToCustomerMode,
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(10.dp),
-                    border = androidx.compose.foundation.BorderStroke(1.dp, EditorialBorderSubtle)
+                    border = androidx.compose.foundation.BorderStroke(1.dp, EditorialCardBorder)
                 ) {
                     Icon(
                         imageVector = Icons.Default.Visibility,
                         contentDescription = null,
-                        tint = EditorialBlue,
+                        tint = FitLookPink,
                         modifier = Modifier.size(16.dp)
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
                         text = "Preview Digital Store as Customer",
                         style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.SemiBold),
-                        color = EditorialNavy
+                        color = FitLookTextPrimary
                     )
                 }
             }
@@ -188,7 +190,8 @@ fun ShopDashboardScreen(
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(20.dp),
-                colors = CardDefaults.cardColors(containerColor = EditorialDarkBanner)
+                colors = CardDefaults.cardColors(containerColor = EditorialCardBg),
+                border = androidx.compose.foundation.BorderStroke(1.dp, FitLookPurple.copy(alpha = 0.4f))
             ) {
                 Column(modifier = Modifier.padding(18.dp)) {
                     Row(
@@ -203,7 +206,7 @@ fun ShopDashboardScreen(
                                     fontWeight = FontWeight.Bold,
                                     letterSpacing = 1.5.sp
                                 ),
-                                color = Color.White.copy(alpha = 0.7f)
+                                color = FitLookPinkLight
                             )
                             Text(
                                 text = "${shopProfile.availableCredits} Credits Available",
@@ -217,7 +220,7 @@ fun ShopDashboardScreen(
                         Box(
                             modifier = Modifier
                                 .clip(RoundedCornerShape(8.dp))
-                                .background(EditorialBlue)
+                                .background(FitLookPurple)
                                 .padding(horizontal = 10.dp, vertical = 5.dp)
                         ) {
                             Text(
@@ -241,8 +244,8 @@ fun ShopDashboardScreen(
                             .fillMaxWidth()
                             .height(8.dp)
                             .clip(RoundedCornerShape(4.dp)),
-                        color = EditorialBlue,
-                        trackColor = Color.White.copy(alpha = 0.2f)
+                        color = FitLookPink,
+                        trackColor = FitLookDarkSurface
                     )
 
                     Spacer(modifier = Modifier.height(12.dp))
@@ -255,15 +258,15 @@ fun ShopDashboardScreen(
                         Text(
                             text = "1 credit deducted per successful try-on",
                             style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
-                            color = Color.White.copy(alpha = 0.7f)
+                            color = FitLookTextSecondary
                         )
 
                         Button(
                             onClick = onViewPricing,
                             shape = RoundedCornerShape(8.dp),
                             colors = ButtonDefaults.buttonColors(
-                                containerColor = Color.White,
-                                contentColor = EditorialNavy
+                                containerColor = FitLookPurple,
+                                contentColor = Color.White
                             ),
                             contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp)
                         ) {
@@ -283,7 +286,7 @@ fun ShopDashboardScreen(
                     fontWeight = FontWeight.Bold,
                     letterSpacing = 1.sp
                 ),
-                color = EditorialSubtext
+                color = FitLookTextSecondary
             )
 
             Row(
@@ -335,7 +338,7 @@ fun ShopDashboardScreen(
                     fontWeight = FontWeight.Bold,
                     letterSpacing = 1.sp
                 ),
-                color = EditorialSubtext
+                color = FitLookTextSecondary
             )
 
             Row(
@@ -347,7 +350,7 @@ fun ShopDashboardScreen(
                     title = "Total Try-Ons",
                     value = "${analytics?.totalTryOns ?: 270}",
                     icon = Icons.Default.AutoAwesome,
-                    tint = EditorialBlue
+                    tint = FitLookPink
                 )
 
                 AnalyticsStatCard(
@@ -355,7 +358,7 @@ fun ShopDashboardScreen(
                     title = "Customer Visits",
                     value = "${analytics?.totalVisits ?: shopProfile.customerVisits}",
                     icon = Icons.Default.People,
-                    tint = Color(0xFF2E7D32)
+                    tint = Color(0xFF4CAF50)
                 )
             }
 
@@ -389,7 +392,7 @@ fun ShopDashboardScreen(
                                 Icon(
                                     imageVector = Icons.Default.TrendingUp,
                                     contentDescription = null,
-                                    tint = EditorialBlue,
+                                    tint = FitLookPink,
                                     modifier = Modifier.size(16.dp)
                                 )
                                 Spacer(modifier = Modifier.width(4.dp))
@@ -399,20 +402,20 @@ fun ShopDashboardScreen(
                                         fontWeight = FontWeight.Bold,
                                         fontSize = 10.sp
                                     ),
-                                    color = EditorialBlue
+                                    color = FitLookPink
                                 )
                             }
                             Text(
                                 text = topProduct.name,
                                 style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
-                                color = EditorialNavy,
+                                color = FitLookTextPrimary,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis
                             )
                             Text(
                                 text = "₹%.0f • ${topProduct.tryOnCount} Customer Try-Ons".format(topProduct.price),
                                 style = MaterialTheme.typography.bodySmall,
-                                color = EditorialSecondaryText
+                                color = FitLookTextSecondary
                             )
                         }
                     }
@@ -448,13 +451,13 @@ private fun QuickActionCard(
                 modifier = Modifier
                     .size(40.dp)
                     .clip(RoundedCornerShape(10.dp))
-                    .background(EditorialBlueContainer),
+                    .background(FitLookPurple.copy(alpha = 0.25f)),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
                     imageVector = icon,
                     contentDescription = title,
-                    tint = EditorialBlue,
+                    tint = FitLookPink,
                     modifier = Modifier.size(22.dp)
                 )
             }
@@ -464,13 +467,13 @@ private fun QuickActionCard(
             Text(
                 text = title,
                 style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
-                color = EditorialNavy
+                color = FitLookTextPrimary
             )
 
             Text(
                 text = subtitle,
                 style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
-                color = EditorialSecondaryText,
+                color = FitLookTextSecondary,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
@@ -501,7 +504,7 @@ private fun AnalyticsStatCard(
                 Text(
                     text = title,
                     style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
-                    color = EditorialSubtext
+                    color = FitLookTextSecondary
                 )
                 Icon(
                     imageVector = icon,
@@ -519,7 +522,7 @@ private fun AnalyticsStatCard(
                     fontWeight = FontWeight.Black,
                     fontSize = 22.sp
                 ),
-                color = EditorialNavy
+                color = Color.White
             )
         }
     }

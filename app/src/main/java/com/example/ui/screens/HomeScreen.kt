@@ -40,6 +40,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
@@ -52,18 +53,16 @@ import com.example.data.model.TryOnResultData
 import com.example.data.model.UserAccount
 import com.example.ui.components.FitLookTopBar
 import com.example.ui.components.SmartImage
-import com.example.ui.theme.EditorialBlue
-import com.example.ui.theme.EditorialBlueContainer
-import com.example.ui.theme.EditorialBlueContainerBorder
 import com.example.ui.theme.EditorialCardBg
 import com.example.ui.theme.EditorialCardBorder
-import com.example.ui.theme.EditorialDarkBanner
-import com.example.ui.theme.EditorialDarkBannerIconBg
-import com.example.ui.theme.EditorialDarkBannerSub
-import com.example.ui.theme.EditorialNavy
-import com.example.ui.theme.EditorialSecondaryText
-import com.example.ui.theme.EditorialSubtext
-import com.example.ui.theme.EditorialTextDark
+import com.example.ui.theme.FitLookDarkNavyBg
+import com.example.ui.theme.FitLookDarkSurface
+import com.example.ui.theme.FitLookGradientPrimary
+import com.example.ui.theme.FitLookPink
+import com.example.ui.theme.FitLookPinkLight
+import com.example.ui.theme.FitLookPurple
+import com.example.ui.theme.FitLookTextPrimary
+import com.example.ui.theme.FitLookTextSecondary
 
 @Composable
 fun HomeScreen(
@@ -82,7 +81,7 @@ fun HomeScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
+            .background(FitLookDarkNavyBg)
             .testTag("home_screen")
     ) {
         FitLookTopBar(
@@ -97,30 +96,30 @@ fun HomeScreen(
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = 20.dp, vertical = 6.dp)
         ) {
-            // EDITORIAL HERO BANNER - TRY CLOTHES ON MY PHOTO
+            // PREMIUM FITLOOK AI HERO BANNER
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clip(RoundedCornerShape(32.dp))
+                    .clip(RoundedCornerShape(28.dp))
                     .testTag("hero_banner_card"),
-                shape = RoundedCornerShape(32.dp),
-                colors = CardDefaults.cardColors(containerColor = EditorialBlueContainer),
-                border = androidx.compose.foundation.BorderStroke(1.dp, EditorialBlueContainerBorder)
+                shape = RoundedCornerShape(28.dp),
+                colors = CardDefaults.cardColors(containerColor = EditorialCardBg),
+                border = androidx.compose.foundation.BorderStroke(1.dp, EditorialCardBorder)
             ) {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(24.dp)
+                        .padding(22.dp)
                 ) {
-                    // "AI Clothing Change" Badge
+                    // "AI Virtual Try-On" Badge
                     Box(
                         modifier = Modifier
                             .clip(RoundedCornerShape(20.dp))
-                            .background(EditorialNavy)
-                            .padding(horizontal = 12.dp, vertical = 5.dp)
+                            .background(FitLookGradientPrimary)
+                            .padding(horizontal = 14.dp, vertical = 6.dp)
                     ) {
                         Text(
-                            text = "✨ AI CLOTHING CHANGE",
+                            text = "✨ REAL AI VIRTUAL TRY-ON",
                             style = MaterialTheme.typography.labelSmall.copy(
                                 fontWeight = FontWeight.Black,
                                 letterSpacing = 1.5.sp,
@@ -133,90 +132,96 @@ fun HomeScreen(
                     Spacer(modifier = Modifier.height(16.dp))
 
                     Text(
-                        text = "Try Clothes on\nMy Photo",
+                        text = "Try Clothes on\nYour Photo",
                         style = MaterialTheme.typography.headlineMedium.copy(
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 30.sp,
-                            lineHeight = 36.sp,
+                            fontWeight = FontWeight.Black,
+                            fontSize = 28.sp,
+                            lineHeight = 34.sp,
                             letterSpacing = (-0.5).sp
                         ),
-                        color = EditorialNavy
+                        color = Color.White
                     )
 
-                    Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(10.dp))
 
                     Text(
-                        text = "Upload your photo • Select Pant, Shirt, Suit, Jacket or Traditional wear • AI dresses you with preserved face & natural fit.",
-                        style = MaterialTheme.typography.bodyMedium.copy(
-                            fontSize = 14.sp
+                        text = "Upload your photo, choose or upload an outfit and see realistic AI Try-On look with your face and body kept natural.",
+                        style = MaterialTheme.typography.bodyLarge.copy(
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.Medium,
+                            lineHeight = 20.sp
                         ),
-                        color = EditorialSecondaryText
+                        color = FitLookTextSecondary
                     )
 
                     Spacer(modifier = Modifier.height(20.dp))
 
-                    // HERO ACTION BUTTONS
+                    // HERO ACTION BUTTONS: Primary Gradient "✨ Try Clothes on My Photo" & Secondary "👔 Shop Catalogue"
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
-                        Button(
-                            onClick = onStartTryOn,
+                        Box(
                             modifier = Modifier
                                 .weight(1.3f)
-                                .height(54.dp)
+                                .height(52.dp)
+                                .clip(RoundedCornerShape(16.dp))
+                                .background(FitLookGradientPrimary)
+                                .clickable { onStartTryOn() }
                                 .testTag("try_on_my_photo_hero_button"),
-                            shape = RoundedCornerShape(16.dp),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = EditorialBlue,
-                                contentColor = Color.White
-                            ),
-                            elevation = ButtonDefaults.buttonElevation(defaultElevation = 2.dp)
+                            contentAlignment = Alignment.Center
                         ) {
-                            Icon(
-                                imageVector = Icons.Default.AutoAwesome,
-                                contentDescription = null,
-                                modifier = Modifier.size(18.dp),
-                                tint = Color.White
-                            )
-                            Spacer(modifier = Modifier.width(6.dp))
-                            Text(
-                                text = "TRY ON MY PHOTO",
-                                style = MaterialTheme.typography.titleSmall.copy(
-                                    fontWeight = FontWeight.Bold,
-                                    letterSpacing = 0.6.sp,
-                                    fontSize = 13.sp
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Center
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.AutoAwesome,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(18.dp),
+                                    tint = Color.White
                                 )
-                            )
+                                Spacer(modifier = Modifier.width(6.dp))
+                                Text(
+                                    text = "✨ Try On Photo",
+                                    style = MaterialTheme.typography.titleSmall.copy(
+                                        fontWeight = FontWeight.Bold,
+                                        letterSpacing = 0.5.sp,
+                                        fontSize = 14.sp
+                                    ),
+                                    color = Color.White
+                                )
+                            }
                         }
 
                         Button(
                             onClick = onViewCatalogue,
                             modifier = Modifier
-                                .weight(1f)
-                                .height(54.dp)
+                                .weight(1.1f)
+                                .height(52.dp)
                                 .testTag("browse_catalogue_button"),
                             shape = RoundedCornerShape(16.dp),
                             colors = ButtonDefaults.buttonColors(
-                                containerColor = EditorialNavy,
+                                containerColor = FitLookDarkSurface,
                                 contentColor = Color.White
                             ),
-                            elevation = ButtonDefaults.buttonElevation(defaultElevation = 2.dp)
+                            border = androidx.compose.foundation.BorderStroke(1.dp, EditorialCardBorder)
                         ) {
                             Icon(
-                                imageVector = Icons.Default.Storefront,
+                                imageVector = Icons.Default.Checkroom,
                                 contentDescription = null,
                                 modifier = Modifier.size(18.dp),
-                                tint = Color.White
+                                tint = FitLookPinkLight
                             )
                             Spacer(modifier = Modifier.width(6.dp))
                             Text(
-                                text = "SHOP STORE",
+                                text = "👔 Catalogue",
                                 style = MaterialTheme.typography.titleSmall.copy(
                                     fontWeight = FontWeight.Bold,
-                                    letterSpacing = 0.8.sp,
+                                    letterSpacing = 0.4.sp,
                                     fontSize = 13.sp
-                                )
+                                ),
+                                color = Color.White
                             )
                         }
                     }
@@ -235,7 +240,7 @@ fun HomeScreen(
                     Icon(
                         imageVector = Icons.Default.Checkroom,
                         contentDescription = null,
-                        tint = EditorialBlue,
+                        tint = FitLookPink,
                         modifier = Modifier.size(18.dp)
                     )
                     Spacer(modifier = Modifier.width(6.dp))
@@ -246,7 +251,7 @@ fun HomeScreen(
                             letterSpacing = 1.sp,
                             fontSize = 13.sp
                         ),
-                        color = EditorialTextDark
+                        color = FitLookTextPrimary
                     )
                 }
                 Text(
@@ -255,7 +260,7 @@ fun HomeScreen(
                         fontWeight = FontWeight.Bold,
                         fontSize = 12.sp
                     ),
-                    color = EditorialBlue,
+                    color = FitLookPink,
                     modifier = Modifier
                         .clickable { onStartTryOn() }
                         .padding(4.dp)
@@ -271,6 +276,7 @@ fun HomeScreen(
                 Pair("Formal Suit", "🤵"),
                 Pair("Jacket", "🧥"),
                 Pair("Traditional Clothes", "🥻"),
+                Pair("Sherwani", "👑"),
                 Pair("Dress", "👗")
             )
 
@@ -305,7 +311,7 @@ fun HomeScreen(
                                     fontWeight = FontWeight.Bold,
                                     fontSize = 12.sp
                                 ),
-                                color = EditorialNavy,
+                                color = FitLookTextPrimary,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis
                             )
@@ -316,7 +322,7 @@ fun HomeScreen(
                                     fontSize = 10.sp,
                                     fontWeight = FontWeight.SemiBold
                                 ),
-                                color = EditorialBlue
+                                color = FitLookPink
                             )
                         }
                     }
@@ -336,18 +342,18 @@ fun HomeScreen(
                         Icon(
                             imageVector = Icons.Default.ShoppingBag,
                             contentDescription = null,
-                            tint = EditorialBlue,
+                            tint = FitLookPink,
                             modifier = Modifier.size(18.dp)
                         )
                         Spacer(modifier = Modifier.width(6.dp))
                         Text(
-                            text = "STORE COLLECTION",
+                            text = "SHOP CATALOGUE",
                             style = MaterialTheme.typography.labelLarge.copy(
                                 fontWeight = FontWeight.Bold,
                                 letterSpacing = 1.sp,
                                 fontSize = 13.sp
                             ),
-                            color = EditorialTextDark
+                            color = FitLookTextPrimary
                         )
                     }
                     Text(
@@ -356,7 +362,7 @@ fun HomeScreen(
                             fontWeight = FontWeight.Bold,
                             fontSize = 12.sp
                         ),
-                        color = EditorialBlue,
+                        color = FitLookPink,
                         modifier = Modifier
                             .clickable { onViewCatalogue() }
                             .padding(4.dp)
@@ -395,7 +401,7 @@ fun HomeScreen(
                                             fontWeight = FontWeight.Bold,
                                             fontSize = 13.sp
                                         ),
-                                        color = EditorialNavy,
+                                        color = FitLookTextPrimary,
                                         maxLines = 1,
                                         overflow = TextOverflow.Ellipsis
                                     )
@@ -405,7 +411,7 @@ fun HomeScreen(
                                             fontWeight = FontWeight.Black,
                                             fontSize = 12.sp
                                         ),
-                                        color = EditorialBlue
+                                        color = FitLookPink
                                     )
                                 }
                             }
@@ -429,7 +435,7 @@ fun HomeScreen(
                         letterSpacing = 1.sp,
                         fontSize = 13.sp
                     ),
-                    color = EditorialTextDark
+                    color = FitLookTextPrimary
                 )
                 Text(
                     text = "View All",
@@ -437,7 +443,7 @@ fun HomeScreen(
                         fontWeight = FontWeight.Bold,
                         fontSize = 12.sp
                     ),
-                    color = EditorialBlue,
+                    color = FitLookPink,
                     modifier = Modifier
                         .clickable { onStartTryOn() }
                         .padding(4.dp)
@@ -479,7 +485,7 @@ fun HomeScreen(
                                     letterSpacing = (-0.3).sp,
                                     fontSize = 12.sp
                                 ),
-                                color = EditorialTextDark
+                                color = FitLookTextPrimary
                             )
                         }
                     }
@@ -496,7 +502,8 @@ fun HomeScreen(
                     .clickable { onViewProfilePrivacy() }
                     .testTag("privacy_highlight_card"),
                 shape = RoundedCornerShape(18.dp),
-                colors = CardDefaults.cardColors(containerColor = EditorialDarkBanner)
+                colors = CardDefaults.cardColors(containerColor = EditorialCardBg),
+                border = androidx.compose.foundation.BorderStroke(1.dp, FitLookPurple.copy(alpha = 0.4f))
             ) {
                 Row(
                     modifier = Modifier
@@ -508,13 +515,13 @@ fun HomeScreen(
                         modifier = Modifier
                             .size(42.dp)
                             .clip(CircleShape)
-                            .background(EditorialDarkBannerIconBg),
+                            .background(FitLookPurple.copy(alpha = 0.25f)),
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
                             imageVector = Icons.Default.Shield,
                             contentDescription = null,
-                            tint = Color.White,
+                            tint = FitLookPink,
                             modifier = Modifier.size(22.dp)
                         )
                     }
@@ -527,22 +534,22 @@ fun HomeScreen(
                                 letterSpacing = 1.5.sp,
                                 fontSize = 10.sp
                             ),
-                            color = EditorialDarkBannerSub
+                            color = FitLookPink
                         )
                         Spacer(modifier = Modifier.height(2.dp))
                         Text(
-                            text = "Images are automatically deleted after your timer.",
+                            text = "Photos are automatically deleted according to your selected privacy setting.",
                             style = MaterialTheme.typography.bodySmall.copy(
                                 fontSize = 12.sp,
                                 lineHeight = 16.sp
                             ),
-                            color = Color.White.copy(alpha = 0.9f)
+                            color = FitLookTextSecondary
                         )
                     }
                     Icon(
                         imageVector = Icons.Default.ChevronRight,
                         contentDescription = null,
-                        tint = EditorialDarkBannerSub,
+                        tint = FitLookTextSecondary,
                         modifier = Modifier.size(20.dp)
                     )
                 }
@@ -566,7 +573,7 @@ fun HomeScreen(
                         Icon(
                             imageVector = Icons.Default.Info,
                             contentDescription = null,
-                            tint = EditorialBlue,
+                            tint = FitLookPink,
                             modifier = Modifier.size(20.dp)
                         )
                         Spacer(modifier = Modifier.width(8.dp))
@@ -576,19 +583,19 @@ fun HomeScreen(
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 16.sp
                             ),
-                            color = EditorialNavy
+                            color = FitLookTextPrimary
                         )
                     }
 
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    HowItWorksStep(stepNum = "1", title = "Select Category / Store Item", desc = "Choose Man, Woman, Boy, Girl or pick an in-store garment.")
+                    HowItWorksStep(stepNum = "1", title = "Upload Person Photo", desc = "Upload from phone Gallery or take with Camera.")
                     Spacer(modifier = Modifier.height(12.dp))
-                    HowItWorksStep(stepNum = "2", title = "Upload Clear Full-Body Photo", desc = "Upload a photo or selfie in clean lighting.")
+                    HowItWorksStep(stepNum = "2", title = "Select or Upload Outfit", desc = "Choose pant, shirt, dress from catalogue or upload your own garment.")
                     Spacer(modifier = Modifier.height(12.dp))
-                    HowItWorksStep(stepNum = "3", title = "Choose Fit Style", desc = "Pick Slim, Regular or Loose Fit tailoring.")
+                    HowItWorksStep(stepNum = "3", title = "Generate AI Look", desc = "AI replaces clothes naturally while keeping face and body posture intact.")
                     Spacer(modifier = Modifier.height(12.dp))
-                    HowItWorksStep(stepNum = "4", title = "AI Virtual Try-On", desc = "Receive your personalized realistic virtual try-on in seconds.")
+                    HowItWorksStep(stepNum = "4", title = "Download & Share", desc = "Compare Before/After, download HD photo, or share directly on WhatsApp.")
                 }
             }
 
@@ -608,7 +615,7 @@ fun HomeScreen(
                             letterSpacing = 1.sp,
                             fontSize = 13.sp
                         ),
-                        color = EditorialTextDark
+                        color = FitLookTextPrimary
                     )
                     Text(
                         text = "View All",
@@ -616,7 +623,7 @@ fun HomeScreen(
                             fontWeight = FontWeight.Bold,
                             fontSize = 12.sp
                         ),
-                        color = EditorialBlue,
+                        color = FitLookPink,
                         modifier = Modifier
                             .clickable { onViewMyLooks() }
                             .padding(4.dp)
@@ -654,7 +661,7 @@ fun HomeScreen(
                                             fontWeight = FontWeight.Bold,
                                             fontSize = 13.sp
                                         ),
-                                        color = EditorialNavy,
+                                        color = FitLookTextPrimary,
                                         maxLines = 1
                                     )
                                     Text(
@@ -662,7 +669,7 @@ fun HomeScreen(
                                         style = MaterialTheme.typography.labelSmall.copy(
                                             fontSize = 11.sp
                                         ),
-                                        color = EditorialSecondaryText
+                                        color = FitLookTextSecondary
                                     )
                                 }
                             }
@@ -686,7 +693,7 @@ private fun HowItWorksStep(stepNum: String, title: String, desc: String) {
             modifier = Modifier
                 .size(26.dp)
                 .clip(CircleShape)
-                .background(EditorialBlueContainer),
+                .background(FitLookPurple.copy(alpha = 0.25f)),
             contentAlignment = Alignment.Center
         ) {
             Text(
@@ -695,7 +702,7 @@ private fun HowItWorksStep(stepNum: String, title: String, desc: String) {
                     fontWeight = FontWeight.Black,
                     fontSize = 11.sp
                 ),
-                color = EditorialBlue
+                color = FitLookPink
             )
         }
         Spacer(modifier = Modifier.width(12.dp))
@@ -706,7 +713,7 @@ private fun HowItWorksStep(stepNum: String, title: String, desc: String) {
                     fontWeight = FontWeight.Bold,
                     fontSize = 13.sp
                 ),
-                color = EditorialNavy
+                color = FitLookTextPrimary
             )
             Text(
                 text = desc,
@@ -714,8 +721,9 @@ private fun HowItWorksStep(stepNum: String, title: String, desc: String) {
                     fontSize = 12.sp,
                     lineHeight = 16.sp
                 ),
-                color = EditorialSecondaryText
+                color = FitLookTextSecondary
             )
         }
     }
 }
+

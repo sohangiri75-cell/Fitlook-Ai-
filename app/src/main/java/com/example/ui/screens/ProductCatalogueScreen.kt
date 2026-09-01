@@ -46,6 +46,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
@@ -56,14 +57,16 @@ import com.example.data.model.ProductCategory
 import com.example.data.model.ProductItem
 import com.example.data.model.ShopProfile
 import com.example.ui.components.SmartImage
-import com.example.ui.theme.EditorialBlue
-import com.example.ui.theme.EditorialBlueContainer
-import com.example.ui.theme.EditorialBorderSubtle
 import com.example.ui.theme.EditorialCardBg
 import com.example.ui.theme.EditorialCardBorder
-import com.example.ui.theme.EditorialNavy
-import com.example.ui.theme.EditorialSecondaryText
-import com.example.ui.theme.EditorialSubtext
+import com.example.ui.theme.FitLookDarkNavyBg
+import com.example.ui.theme.FitLookDarkSurface
+import com.example.ui.theme.FitLookGradientPrimary
+import com.example.ui.theme.FitLookPink
+import com.example.ui.theme.FitLookPinkLight
+import com.example.ui.theme.FitLookPurple
+import com.example.ui.theme.FitLookTextPrimary
+import com.example.ui.theme.FitLookTextSecondary
 
 @Composable
 fun ProductCatalogueScreen(
@@ -80,7 +83,7 @@ fun ProductCatalogueScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
+            .background(FitLookDarkNavyBg)
             .testTag("product_catalogue_screen")
     ) {
         // Shop Profile Banner
@@ -95,12 +98,12 @@ fun ProductCatalogueScreen(
         OutlinedTextField(
             value = searchQuery,
             onValueChange = onSearchQueryChanged,
-            placeholder = { Text("Search saree, kurta, blazer, dress...", fontSize = 13.sp) },
+            placeholder = { Text("Search saree, kurta, sherwani, pant...", fontSize = 13.sp, color = FitLookTextSecondary) },
             leadingIcon = {
                 Icon(
                     imageVector = Icons.Default.Search,
                     contentDescription = "Search",
-                    tint = EditorialSubtext
+                    tint = FitLookPink
                 )
             },
             trailingIcon = {
@@ -109,7 +112,7 @@ fun ProductCatalogueScreen(
                         Icon(
                             imageVector = Icons.Default.Close,
                             contentDescription = "Clear",
-                            tint = EditorialSubtext
+                            tint = FitLookTextSecondary
                         )
                     }
                 }
@@ -117,10 +120,12 @@ fun ProductCatalogueScreen(
             singleLine = true,
             shape = RoundedCornerShape(14.dp),
             colors = OutlinedTextFieldDefaults.colors(
-                focusedContainerColor = Color.White,
-                unfocusedContainerColor = Color.White,
-                focusedBorderColor = EditorialBlue,
-                unfocusedBorderColor = EditorialBorderSubtle
+                focusedContainerColor = EditorialCardBg,
+                unfocusedContainerColor = EditorialCardBg,
+                focusedBorderColor = FitLookPurple,
+                unfocusedBorderColor = EditorialCardBorder,
+                focusedTextColor = Color.White,
+                unfocusedTextColor = Color.White
             ),
             modifier = Modifier
                 .fillMaxWidth()
@@ -139,17 +144,17 @@ fun ProductCatalogueScreen(
             FilterChip(
                 selected = selectedCategory == null,
                 onClick = { onCategorySelected(null) },
-                label = { Text("All (${products.size})", fontWeight = if (selectedCategory == null) FontWeight.Bold else FontWeight.Normal) },
+                label = { Text("✨ All (${products.size})", fontWeight = if (selectedCategory == null) FontWeight.Bold else FontWeight.Normal) },
                 colors = FilterChipDefaults.filterChipColors(
-                    selectedContainerColor = EditorialBlue,
+                    selectedContainerColor = FitLookPurple,
                     selectedLabelColor = Color.White,
-                    containerColor = Color.White,
-                    labelColor = EditorialNavy
+                    containerColor = EditorialCardBg,
+                    labelColor = FitLookTextSecondary
                 ),
                 border = FilterChipDefaults.filterChipBorder(
                     enabled = true,
                     selected = selectedCategory == null,
-                    borderColor = if (selectedCategory == null) EditorialBlue else EditorialBorderSubtle
+                    borderColor = if (selectedCategory == null) FitLookPink else EditorialCardBorder
                 )
             )
 
@@ -160,15 +165,15 @@ fun ProductCatalogueScreen(
                     onClick = { onCategorySelected(if (isSelected) null else cat) },
                     label = { Text(cat.displayName, fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal) },
                     colors = FilterChipDefaults.filterChipColors(
-                        selectedContainerColor = EditorialBlue,
+                        selectedContainerColor = FitLookPurple,
                         selectedLabelColor = Color.White,
-                        containerColor = Color.White,
-                        labelColor = EditorialNavy
+                        containerColor = EditorialCardBg,
+                        labelColor = FitLookTextSecondary
                     ),
                     border = FilterChipDefaults.filterChipBorder(
                         enabled = true,
                         selected = isSelected,
-                        borderColor = if (isSelected) EditorialBlue else EditorialBorderSubtle
+                        borderColor = if (isSelected) FitLookPink else EditorialCardBorder
                     )
                 )
             }
@@ -186,20 +191,20 @@ fun ProductCatalogueScreen(
                     Icon(
                         imageVector = Icons.Default.FilterList,
                         contentDescription = null,
-                        tint = EditorialSubtext,
+                        tint = FitLookTextSecondary,
                         modifier = Modifier.size(48.dp)
                     )
                     Spacer(modifier = Modifier.height(12.dp))
                     Text(
                         text = "No products found in this category",
                         style = MaterialTheme.typography.titleMedium,
-                        color = EditorialNavy
+                        color = FitLookTextPrimary
                     )
                     Spacer(modifier = Modifier.height(6.dp))
                     Text(
                         text = "Try searching for another style or clear filters.",
                         style = MaterialTheme.typography.bodySmall,
-                        color = EditorialSecondaryText
+                        color = FitLookTextSecondary
                     )
                 }
             }
@@ -229,8 +234,8 @@ private fun ShopHeaderBanner(
     onContactShop: () -> Unit
 ) {
     Surface(
-        color = Color.White,
-        shadowElevation = 1.dp,
+        color = EditorialCardBg,
+        shadowElevation = 2.dp,
         modifier = Modifier.fillMaxWidth()
     ) {
         Row(
@@ -248,7 +253,7 @@ private fun ShopHeaderBanner(
                     modifier = Modifier
                         .size(44.dp)
                         .clip(RoundedCornerShape(12.dp))
-                        .border(1.dp, EditorialBorderSubtle, RoundedCornerShape(12.dp))
+                        .border(1.dp, EditorialCardBorder, RoundedCornerShape(12.dp))
                 ) {
                     SmartImage(
                         uriString = shopProfile.logoUri,
@@ -261,14 +266,14 @@ private fun ShopHeaderBanner(
                     Text(
                         text = shopProfile.name,
                         style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
-                        color = EditorialNavy,
+                        color = FitLookTextPrimary,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
                     Text(
                         text = "📍 ${shopProfile.location}",
                         style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
-                        color = EditorialSecondaryText,
+                        color = FitLookTextSecondary,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
@@ -315,7 +320,7 @@ private fun ProductCard(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(180.dp)
-                    .background(Color(0xFFF0EFF4))
+                    .background(FitLookDarkSurface)
             ) {
                 SmartImage(
                     uriString = product.primaryImageUri,
@@ -328,7 +333,7 @@ private fun ProductCard(
                     modifier = Modifier
                         .padding(8.dp)
                         .clip(RoundedCornerShape(8.dp))
-                        .background(Color.Black.copy(alpha = 0.65f))
+                        .background(Color.Black.copy(alpha = 0.75f))
                         .padding(horizontal = 8.dp, vertical = 4.dp)
                         .align(Alignment.TopStart)
                 ) {
@@ -348,7 +353,7 @@ private fun ProductCard(
                 Text(
                     text = product.name,
                     style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
-                    color = EditorialNavy,
+                    color = FitLookTextPrimary,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
@@ -361,49 +366,54 @@ private fun ProductCard(
                         fontWeight = FontWeight.Black,
                         fontSize = 15.sp
                     ),
-                    color = EditorialBlue
+                    color = FitLookPink
                 )
 
                 // Sizes
                 Text(
                     text = "Sizes: ${product.availableSizes.joinToString(", ")}",
                     style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
-                    color = EditorialSecondaryText,
+                    color = FitLookTextSecondary,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                // TRY ON CTA BUTTON
-                Button(
-                    onClick = onTryOn,
+                // TRY ON CTA BUTTON WITH GRADIENT
+                Box(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(38.dp)
+                        .clip(RoundedCornerShape(10.dp))
+                        .background(FitLookGradientPrimary)
+                        .clickable { onTryOn() }
                         .testTag("try_on_product_${product.id}"),
-                    shape = RoundedCornerShape(10.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = EditorialBlue,
-                        contentColor = Color.White
-                    ),
-                    contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp)
+                    contentAlignment = Alignment.Center
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.AutoAwesome,
-                        contentDescription = null,
-                        modifier = Modifier.size(14.dp)
-                    )
-                    Spacer(modifier = Modifier.width(6.dp))
-                    Text(
-                        text = "TRY ON",
-                        style = MaterialTheme.typography.labelMedium.copy(
-                            fontWeight = FontWeight.Bold,
-                            letterSpacing = 1.sp
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.AutoAwesome,
+                            contentDescription = null,
+                            tint = Color.White,
+                            modifier = Modifier.size(14.dp)
                         )
-                    )
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text(
+                            text = "TRY ON",
+                            style = MaterialTheme.typography.labelMedium.copy(
+                                fontWeight = FontWeight.Bold,
+                                letterSpacing = 1.sp
+                            ),
+                            color = Color.White
+                        )
+                    }
                 }
             }
         }
     }
 }
+

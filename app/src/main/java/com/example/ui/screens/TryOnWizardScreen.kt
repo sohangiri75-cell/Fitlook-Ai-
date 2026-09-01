@@ -270,7 +270,7 @@ private fun Step1PersonPhotoAndCategory(
             .verticalScroll(rememberScrollState())
     ) {
         Text(
-            text = "1. Upload or Take Photo",
+            text = "1. Upload Your Photo",
             style = MaterialTheme.typography.titleLarge.copy(
                 fontWeight = FontWeight.Bold,
                 fontSize = 20.sp
@@ -278,7 +278,7 @@ private fun Step1PersonPhotoAndCategory(
             color = EditorialNavy
         )
         Text(
-            text = "Take a full-body photo or pick from gallery.",
+            text = "Take a full-body photo or select one from your gallery.",
             style = MaterialTheme.typography.bodyMedium,
             color = EditorialSecondaryText
         )
@@ -327,11 +327,11 @@ private fun Step1PersonPhotoAndCategory(
 
         Spacer(modifier = Modifier.height(14.dp))
 
-        // Image Preview & Selection Card
+        // Image Preview & Upload Card
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(240.dp),
+                .height(250.dp),
             shape = RoundedCornerShape(20.dp),
             colors = CardDefaults.cardColors(containerColor = EditorialCardBg),
             border = androidx.compose.foundation.BorderStroke(
@@ -354,16 +354,16 @@ private fun Step1PersonPhotoAndCategory(
                             .padding(10.dp)
                             .clip(RoundedCornerShape(8.dp))
                             .background(Color(0xCC001D36))
-                            .padding(horizontal = 8.dp, vertical = 4.dp)
+                            .padding(horizontal = 10.dp, vertical = 5.dp)
                     ) {
                         Text(
-                            text = "Photo Selected ✓",
-                            style = MaterialTheme.typography.labelSmall,
+                            text = "✓ Photo Ready for AI",
+                            style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
                             color = Color.White
                         )
                     }
 
-                    // Remove/Replace action button
+                    // Remove action button
                     IconButton(
                         onClick = onRemovePhoto,
                         modifier = Modifier
@@ -380,23 +380,36 @@ private fun Step1PersonPhotoAndCategory(
                         )
                     }
                 } else {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Icon(
-                            imageVector = Icons.Default.AddPhotoAlternate,
-                            contentDescription = null,
-                            tint = EditorialSecondaryText,
-                            modifier = Modifier.size(44.dp)
-                        )
-                        Spacer(modifier = Modifier.height(8.dp))
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.padding(16.dp)
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(56.dp)
+                                .clip(CircleShape)
+                                .background(EditorialBlueContainer),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.AddPhotoAlternate,
+                                contentDescription = null,
+                                tint = EditorialBlue,
+                                modifier = Modifier.size(30.dp)
+                            )
+                        }
+                        Spacer(modifier = Modifier.height(10.dp))
                         Text(
-                            text = "No photo selected yet",
-                            style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
-                            color = EditorialSecondaryText
+                            text = "Upload or Take Your Photo",
+                            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                            color = EditorialNavy
                         )
+                        Spacer(modifier = Modifier.height(4.dp))
                         Text(
-                            text = "Tap Camera or Gallery below",
-                            style = MaterialTheme.typography.labelSmall,
-                            color = EditorialSecondaryText.copy(alpha = 0.8f)
+                            text = "Face & pose will be preserved automatically",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = EditorialSecondaryText,
+                            textAlign = androidx.compose.ui.text.style.TextAlign.Center
                         )
                     }
                 }
@@ -405,7 +418,7 @@ private fun Step1PersonPhotoAndCategory(
 
         Spacer(modifier = Modifier.height(14.dp))
 
-        // Actions: Camera, Gallery, Sample
+        // Large, clear Action Buttons: Camera & Gallery
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(10.dp)
@@ -414,7 +427,7 @@ private fun Step1PersonPhotoAndCategory(
                 onClick = onTakePhoto,
                 modifier = Modifier
                     .weight(1f)
-                    .height(48.dp)
+                    .height(52.dp)
                     .testTag("btn_take_person_photo"),
                 shape = RoundedCornerShape(14.dp),
                 colors = ButtonDefaults.buttonColors(
@@ -422,42 +435,49 @@ private fun Step1PersonPhotoAndCategory(
                     contentColor = Color.White
                 )
             ) {
-                Icon(Icons.Default.CameraAlt, contentDescription = null, modifier = Modifier.size(18.dp), tint = Color.White)
-                Spacer(modifier = Modifier.width(6.dp))
-                Text("Camera", style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold))
+                Icon(Icons.Default.CameraAlt, contentDescription = null, modifier = Modifier.size(20.dp), tint = Color.White)
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = if (imageUri == null) "Take Photo" else "Retake (Camera)",
+                    style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold)
+                )
             }
 
             Button(
                 onClick = onPickGallery,
                 modifier = Modifier
                     .weight(1f)
-                    .height(48.dp)
+                    .height(52.dp)
                     .testTag("btn_gallery_person_photo"),
                 shape = RoundedCornerShape(14.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = EditorialCardBg,
-                    contentColor = EditorialTextDark
+                    containerColor = EditorialBlueContainer,
+                    contentColor = EditorialNavy
                 ),
-                border = androidx.compose.foundation.BorderStroke(1.dp, EditorialCardBorder)
+                border = androidx.compose.foundation.BorderStroke(1.dp, EditorialBlue.copy(alpha = 0.4f))
             ) {
-                Icon(Icons.Default.PhotoLibrary, contentDescription = null, modifier = Modifier.size(18.dp), tint = EditorialTextDark)
-                Spacer(modifier = Modifier.width(6.dp))
-                Text("Gallery", style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold))
+                Icon(Icons.Default.PhotoLibrary, contentDescription = null, modifier = Modifier.size(20.dp), tint = EditorialBlue)
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = if (imageUri == null) "From Gallery" else "Change (Gallery)",
+                    style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold),
+                    color = EditorialNavy
+                )
             }
         }
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(10.dp))
 
         OutlinedButton(
             onClick = onUseSample,
             modifier = Modifier
                 .fillMaxWidth()
-                .height(44.dp)
+                .height(46.dp)
                 .testTag("btn_sample_person_photo"),
             shape = RoundedCornerShape(14.dp),
             border = androidx.compose.foundation.BorderStroke(1.dp, EditorialBlue.copy(alpha = 0.5f))
         ) {
-            Text("✨ Use High-Quality Sample Model Photo", style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold), color = EditorialBlue)
+            Text("✨ Or Try With High-Quality Sample Model", style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold), color = EditorialBlue)
         }
 
         Spacer(modifier = Modifier.height(14.dp))
@@ -479,7 +499,7 @@ private fun Step1PersonPhotoAndCategory(
             )
             Spacer(modifier = Modifier.width(8.dp))
             Text(
-                text = "Privacy Protected: Photos are auto-deleted from server within 24h.",
+                text = "Privacy Protected: Photos auto-deleted from server within 24h.",
                 style = MaterialTheme.typography.labelSmall,
                 color = EditorialNavy
             )
@@ -648,7 +668,7 @@ private fun Step3OutfitInput(
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(210.dp),
+                    .height(230.dp),
                 shape = RoundedCornerShape(20.dp),
                 colors = CardDefaults.cardColors(containerColor = EditorialCardBg),
                 border = androidx.compose.foundation.BorderStroke(
@@ -669,11 +689,11 @@ private fun Step3OutfitInput(
                                 .padding(10.dp)
                                 .clip(RoundedCornerShape(8.dp))
                                 .background(Color(0xCC001D36))
-                                .padding(horizontal = 8.dp, vertical = 4.dp)
+                                .padding(horizontal = 10.dp, vertical = 5.dp)
                         ) {
                             Text(
-                                text = "Garment Ready ✓",
-                                style = MaterialTheme.typography.labelSmall,
+                                text = "✓ Garment Ready",
+                                style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
                                 color = Color.White
                             )
                         }
@@ -694,18 +714,36 @@ private fun Step3OutfitInput(
                             )
                         }
                     } else {
-                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Icon(
-                                imageVector = Icons.Default.Checkroom,
-                                contentDescription = null,
-                                tint = EditorialSecondaryText,
-                                modifier = Modifier.size(44.dp)
-                            )
-                            Spacer(modifier = Modifier.height(8.dp))
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            modifier = Modifier.padding(16.dp)
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .size(56.dp)
+                                    .clip(CircleShape)
+                                    .background(EditorialBlueContainer),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Checkroom,
+                                    contentDescription = null,
+                                    tint = EditorialBlue,
+                                    modifier = Modifier.size(30.dp)
+                                )
+                            }
+                            Spacer(modifier = Modifier.height(10.dp))
                             Text(
-                                text = "Upload reference image of $clothingCategory",
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = EditorialSecondaryText
+                                text = "Upload Photo of $clothingCategory",
+                                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                                color = EditorialNavy
+                            )
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Text(
+                                text = "Take photo of clothes hanging / laid flat or from gallery",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = EditorialSecondaryText,
+                                textAlign = androidx.compose.ui.text.style.TextAlign.Center
                             )
                         }
                     }
@@ -723,7 +761,7 @@ private fun Step3OutfitInput(
                     onClick = onTakePhoto,
                     modifier = Modifier
                         .weight(1f)
-                        .height(48.dp)
+                        .height(52.dp)
                         .testTag("btn_take_clothing_photo"),
                     shape = RoundedCornerShape(14.dp),
                     colors = ButtonDefaults.buttonColors(
@@ -731,42 +769,53 @@ private fun Step3OutfitInput(
                         contentColor = Color.White
                     )
                 ) {
-                    Icon(Icons.Default.CameraAlt, contentDescription = null, modifier = Modifier.size(18.dp), tint = Color.White)
-                    Spacer(modifier = Modifier.width(6.dp))
-                    Text("Camera", style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold))
+                    Icon(Icons.Default.CameraAlt, contentDescription = null, modifier = Modifier.size(20.dp), tint = Color.White)
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = if (imageUri == null) "Take Photo" else "Retake Cloth",
+                        style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold)
+                    )
                 }
 
                 Button(
                     onClick = onPickGallery,
                     modifier = Modifier
                         .weight(1f)
-                        .height(48.dp)
+                        .height(52.dp)
                         .testTag("btn_gallery_clothing_photo"),
                     shape = RoundedCornerShape(14.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = EditorialCardBg,
-                        contentColor = EditorialTextDark
+                        containerColor = EditorialBlueContainer,
+                        contentColor = EditorialNavy
                     ),
-                    border = androidx.compose.foundation.BorderStroke(1.dp, EditorialCardBorder)
+                    border = androidx.compose.foundation.BorderStroke(1.dp, EditorialBlue.copy(alpha = 0.4f))
                 ) {
-                    Icon(Icons.Default.PhotoLibrary, contentDescription = null, modifier = Modifier.size(18.dp), tint = EditorialTextDark)
-                    Spacer(modifier = Modifier.width(6.dp))
-                    Text("Gallery", style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold))
+                    Icon(Icons.Default.PhotoLibrary, contentDescription = null, modifier = Modifier.size(20.dp), tint = EditorialBlue)
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = if (imageUri == null) "From Gallery" else "Change Cloth",
+                        style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold),
+                        color = EditorialNavy
+                    )
                 }
             }
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(10.dp))
 
             OutlinedButton(
                 onClick = onUseSample,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(44.dp)
+                    .height(46.dp)
                     .testTag("btn_sample_clothing_photo"),
                 shape = RoundedCornerShape(14.dp),
                 border = androidx.compose.foundation.BorderStroke(1.dp, EditorialBlue.copy(alpha = 0.5f))
             ) {
-                Text("✨ Use Designer Sample Garment", style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold), color = EditorialBlue)
+                Text(
+                    text = "✨ Or Use Sample $clothingCategory Garment",
+                    style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
+                    color = EditorialBlue
+                )
             }
         } else {
             // Text Prompt input field

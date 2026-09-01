@@ -1,65 +1,92 @@
 package com.example.ui.theme
 
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 
-// Editorial Aesthetic Palette (Editorial Fashion Identity)
-val EditorialBg = Color(0xFFFDFBFF)
-val EditorialTextDark = Color(0xFF1A1C1E)
-val EditorialNavy = Color(0xFF001D36)
-val EditorialSubtext = Color(0xFF535F70)
-val EditorialSecondaryText = Color(0xFF43474E)
+// FitLook AI Premium Dark Theme Palette
+val FitLookDarkNavyBg = Color(0xFF0B0F19)
+val FitLookDarkSurface = Color(0xFF111726)
+val FitLookDarkCard = Color(0xFF161E2E)
+val FitLookDarkCardBorder = Color(0xFF263248)
+val FitLookTextPrimary = Color(0xFFF1F5F9)
+val FitLookTextSecondary = Color(0xFF94A3B8)
+val FitLookTextMuted = Color(0xFF64748B)
 
-val EditorialBlue = Color(0xFF0061A4)
-val EditorialBlueLight = Color(0xFF2783D0)
-val EditorialBlueDark = Color(0xFF00497D)
-val EditorialBlueContainer = Color(0xFFD3E4FF)
-val EditorialBlueContainerBorder = Color(0xFFBAC7DB)
+// Purple to Pink Brand Gradients (FitLook AI Identity)
+val FitLookPurple = Color(0xFF8B5CF6)
+val FitLookPink = Color(0xFFEC4899)
+val FitLookVioletDark = Color(0xFF6D28D9)
+val FitLookPinkLight = Color(0xFFF472B6)
 
-val EditorialCardBg = Color(0xFFF2F0F4)
-val EditorialCardBorder = Color(0xFFE0E2EC)
-val EditorialBorderSubtle = Color(0xFFC4C6D0)
-val EditorialActiveCard = Color(0xFFE0E2EC)
+val FitLookGradientPrimary = Brush.horizontalGradient(
+    listOf(FitLookPurple, FitLookPink)
+)
+val FitLookGradientAccent = Brush.linearGradient(
+    listOf(Color(0xFF7C3AED), Color(0xFFDB2777), Color(0xFFF43F5E))
+)
+val FitLookGradientCard = Brush.verticalGradient(
+    listOf(Color(0xFF1E293B), Color(0xFF0F172A))
+)
 
-val EditorialDarkBanner = Color(0xFF1A1C1E)
-val EditorialDarkBannerSub = Color(0xFFC4C6D0)
-val EditorialDarkBannerIconBg = Color(0xFF343A40)
+// Legacy / Compatibility Palette (Dark Navy Fashion Identity)
+val EditorialBg = FitLookDarkNavyBg
+val EditorialTextDark = FitLookTextPrimary
+val EditorialNavy = Color(0xFF0B0F19)
+val EditorialSubtext = FitLookTextSecondary
+val EditorialSecondaryText = FitLookTextSecondary
 
-val EditorialSuccess = Color(0xFF0F9D58)
-val EditorialWarning = Color(0xFFE65100)
-val EditorialError = Color(0xFFBA1A1A)
+val EditorialBlue = Color(0xFF8B5CF6)
+val EditorialBlueLight = Color(0xFFA78BFA)
+val EditorialBlueDark = Color(0xFF6D28D9)
+val EditorialBlueContainer = Color(0xFF241C38)
+val EditorialBlueContainerBorder = Color(0xFF4C3870)
+
+val EditorialCardBg = FitLookDarkCard
+val EditorialCardBorder = FitLookDarkCardBorder
+val EditorialBorderSubtle = Color(0xFF334155)
+val EditorialActiveCard = Color(0xFF1E293B)
+
+val EditorialDarkBanner = Color(0xFF0F172A)
+val EditorialDarkBannerSub = FitLookTextSecondary
+val EditorialDarkBannerIconBg = Color(0xFF1E293B)
+
+val EditorialSuccess = Color(0xFF10B981)
+val EditorialWarning = Color(0xFFF59E0B)
+val EditorialError = Color(0xFFEF4444)
 
 // Dark Theme Variants
-val EditorialDarkBg = Color(0xFF111418)
-val EditorialDarkSurface = Color(0xFF191C20)
-val EditorialDarkCard = Color(0xFF22262C)
-val EditorialDarkCardBorder = Color(0xFF393E47)
-val EditorialDarkPrimary = Color(0xFF80C2FF)
-val EditorialDarkPrimaryContainer = Color(0xFF00497D)
-val EditorialDarkTextPrimary = Color(0xFFE2E2E6)
-val EditorialDarkTextSecondary = Color(0xFFC4C6D0)
+val EditorialDarkBg = FitLookDarkNavyBg
+val EditorialDarkSurface = FitLookDarkSurface
+val EditorialDarkCard = FitLookDarkCard
+val EditorialDarkCardBorder = FitLookDarkCardBorder
+val EditorialDarkPrimary = FitLookPurple
+val EditorialDarkPrimaryContainer = EditorialBlueContainer
+val EditorialDarkTextPrimary = FitLookTextPrimary
+val EditorialDarkTextSecondary = FitLookTextSecondary
 
-// Legacy aliases for backward compatibility if needed
+// Legacy aliases for backward compatibility
 val FashionGoldPrimary = EditorialBlue
 val FashionGoldLight = EditorialBlueLight
-val FashionGoldDark = EditorialNavy
+val FashionGoldDark = Color(0xFF6D28D9)
 val FashionIndigoAccent = EditorialBlue
 val FashionIndigoLight = EditorialBlueLight
-val FashionRoseAccent = EditorialError
-val FashionTealAccent = EditorialBlue
+val FashionRoseAccent = FitLookPink
+val FashionTealAccent = Color(0xFF06B6D4)
 val FashionSuccess = EditorialSuccess
 val FashionWarning = EditorialWarning
 val FashionError = EditorialError
-val FashionDarkBg = EditorialDarkBg
-val FashionDarkSurface = EditorialDarkSurface
-val FashionDarkCard = EditorialDarkCard
-val FashionDarkCardBorder = EditorialDarkCardBorder
-val FashionTextPrimary = EditorialDarkTextPrimary
-val FashionTextSecondary = EditorialDarkTextSecondary
-val FashionTextMuted = EditorialDarkBannerSub
-val FashionLightBg = EditorialBg
-val FashionLightSurface = Color.White
-val FashionLightCard = EditorialCardBg
-val FashionLightCardBorder = EditorialCardBorder
-val FashionLightTextPrimary = EditorialTextDark
-val FashionLightTextSecondary = EditorialSecondaryText
+val FashionDarkBg = FitLookDarkNavyBg
+val FashionDarkSurface = FitLookDarkSurface
+val FashionDarkCard = FitLookDarkCard
+val FashionDarkCardBorder = FitLookDarkCardBorder
+val FashionTextPrimary = FitLookTextPrimary
+val FashionTextSecondary = FitLookTextSecondary
+val FashionTextMuted = FitLookTextMuted
+val FashionLightBg = FitLookDarkNavyBg
+val FashionLightSurface = FitLookDarkSurface
+val FashionLightCard = FitLookDarkCard
+val FashionLightCardBorder = FitLookDarkCardBorder
+val FashionLightTextPrimary = FitLookTextPrimary
+val FashionLightTextSecondary = FitLookTextSecondary
+
 

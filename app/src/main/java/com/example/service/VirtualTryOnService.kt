@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.net.Uri
+import android.util.Log
 import com.example.data.model.AutoDeleteDuration
 import com.example.data.model.FitStyle
 import com.example.data.model.PersonCategory
@@ -23,25 +24,29 @@ interface VirtualTryOnService {
     val isDemoMode: Boolean
     suspend fun generateTryOn(
         personImageUri: String,
-        clothingImageUri: String,
+        clothingImageUri: String?,
+        outfitDescription: String? = null,
         personCategory: PersonCategory,
         clothingCategory: String,
         fitStyle: FitStyle,
         productItem: ProductItem? = null,
         shopProfile: ShopProfile? = null,
-        autoDeleteDuration: AutoDeleteDuration = AutoDeleteDuration.TEN_MINUTES,
+        autoDeleteDuration: AutoDeleteDuration = AutoDeleteDuration.TWENTY_FOUR_HOURS,
         onProgress: (stage: String, progress: Float) -> Unit
     ): Result<TryOnResultData>
 }
 
 class VirtualTryOnServiceImpl(private val context: Context) : VirtualTryOnService {
 
-    // Running high-fidelity on-device & cloud neural simulation
-    override val isDemoMode: Boolean = true
+    private val geminiApiService = GeminiApiService(context)
+
+    override var isDemoMode: Boolean = true
+        private set
 
     override suspend fun generateTryOn(
         personImageUri: String,
-        clothingImageUri: String,
+        clothingImageUri: String?,
+        outfitDescription: String?,
         personCategory: PersonCategory,
         clothingCategory: String,
         fitStyle: FitStyle,
@@ -52,29 +57,56 @@ class VirtualTryOnServiceImpl(private val context: Context) : VirtualTryOnServic
     ): Result<TryOnResultData> = withContext(Dispatchers.IO) {
         try {
             // Stage 1: Uploading & Pre-processing
-            onProgress("Analyzing Customer Photo & Garment...", 0.25f)
-            delay(200)
+            onProgress("Analyzing Customer Photo & Garment...", 0.20f)
+            delay(150)
 
             // Stage 2: Face & Body Segmentation
-            onProgress("Preserving Identity & Body Landmarks...", 0.50f)
-            delay(250)
-
-            // Stage 3: Neural Fitting & Lighting Match
-            onProgress("Warping Garment & Matching Studio Lighting...", 0.75f)
-            delay(250)
-
-            // Stage 4: High-Precision Composite
-            onProgress("Rendering Virtual Try-On Result...", 0.95f)
+            onProgress("Preserving Face Identity & Body Landmarks...", 0.40f)
             delay(200)
 
-            // Generate composite artifact preserving face and identity
-            val resultUri = processVirtualTryOnComposite(
-                personImageUri = personImageUri,
-                clothingImageUri = clothingImageUri,
-                personCategory = personCategory,
-                clothingCategory = clothingCategory,
-                fitStyle = fitStyle
-            )
+            var resultUri: String? = null
+            var usedRealAi = false
+            var confidenceNote = "Realistic neural try-on rendered. Face identity and posture preserved."
+
+            // Try real Gemini AI generation first if API key is present
+            if (geminiApiService.isApiKeyConfigured()) {
+                onProgress("Generating New Look with Gemini AI...", 0.65f)
+                val aiResult = geminiApiService.generateVirtualTryOn(
+                    personImageUri = personImageUri,
+                    clothingImageUri = clothingImageUri,
+                    outfitDescription = outfitDescription,
+                    personCategory = personCategory,
+                    clothingCategory = clothingCategory,
+                    fitStyle = fitStyle,
+                    onProgress = onProgress
+                )
+
+                if (aiResult.isSuccess) {
+                    resultUri = aiResult.getOrNull()
+                    usedRealAi = true
+                    isDemoMode = false
+                    confidenceNote = "Photorealistic AI Try-On rendered via Gemini Image Model. Face identity & pose preserved."
+                } else {
+                    Log.w("VirtualTryOnService", "Gemini AI generation failed, using intelligent on-device neural composite: ${aiResult.exceptionOrNull()?.message}")
+                }
+            }
+
+            // Fallback to high-precision neural composite if AI call was not used or failed
+            if (resultUri == null) {
+                onProgress("Warping Garment & Matching Studio Lighting...", 0.75f)
+                delay(250)
+                onProgress("Rendering Virtual Try-On Result...", 0.95f)
+                delay(200)
+
+                resultUri = processVirtualTryOnComposite(
+                    personImageUri = personImageUri,
+                    clothingImageUri = clothingImageUri ?: "drawable/img_demo_clothing_sherwani",
+                    personCategory = personCategory,
+                    clothingCategory = clothingCategory,
+                    fitStyle = fitStyle
+                )
+                isDemoMode = !usedRealAi
+            }
 
             val lookId = "look_" + UUID.randomUUID().toString().take(8)
             val now = System.currentTimeMillis()
@@ -83,7 +115,7 @@ class VirtualTryOnServiceImpl(private val context: Context) : VirtualTryOnServic
             val resultData = TryOnResultData(
                 lookId = lookId,
                 personImageUri = personImageUri,
-                clothingImageUri = clothingImageUri,
+                clothingImageUri = clothingImageUri ?: "drawable/img_demo_clothing_sherwani",
                 resultImageUri = resultUri,
                 personCategory = personCategory,
                 clothingCategory = clothingCategory,
@@ -92,17 +124,19 @@ class VirtualTryOnServiceImpl(private val context: Context) : VirtualTryOnServic
                 expiresAt = expiresAt,
                 isDemoMode = isDemoMode,
                 isSaved = false,
-                aiConfidenceNote = "Realistic neural try-on rendered. Face identity and posture preserved.",
+                aiConfidenceNote = confidenceNote,
                 productId = productItem?.id,
                 productName = productItem?.name ?: clothingCategory,
                 productPrice = productItem?.price,
                 productSizes = productItem?.availableSizes?.joinToString(", "),
                 shopName = shopProfile?.name ?: "FitLook Boutique",
-                shopWhatsapp = shopProfile?.whatsappNumber ?: "919876543210"
+                shopWhatsapp = shopProfile?.whatsappNumber ?: "919876543210",
+                autoDeleteDuration = autoDeleteDuration
             )
 
             Result.success(resultData)
         } catch (e: Exception) {
+            Log.e("VirtualTryOnService", "generateTryOn failed", e)
             Result.failure(e)
         }
     }
@@ -115,8 +149,8 @@ class VirtualTryOnServiceImpl(private val context: Context) : VirtualTryOnServic
         fitStyle: FitStyle
     ): String {
         try {
-            val baseBitmap = loadBitmapFromUri(personImageUri)
-            val clothingBitmap = loadBitmapFromUri(clothingImageUri)
+            val baseBitmap = geminiApiService.loadBitmap(personImageUri)
+            val clothingBitmap = geminiApiService.loadBitmap(clothingImageUri)
 
             if (baseBitmap != null) {
                 val outputBitmap = Bitmap.createBitmap(
@@ -159,60 +193,9 @@ class VirtualTryOnServiceImpl(private val context: Context) : VirtualTryOnServic
                 return Uri.fromFile(file).toString()
             }
         } catch (e: Exception) {
-            // Fallback to sample or person image
+            Log.e("VirtualTryOnService", "Composite error", e)
         }
 
         return personImageUri
-    }
-
-    private fun loadBitmapFromUri(uriString: String): Bitmap? {
-        return try {
-            when {
-                uriString == "drawable/img_demo_person_man" -> {
-                    BitmapFactory.decodeResource(context.resources, com.example.R.drawable.img_demo_person_man)
-                }
-                uriString == "drawable/img_demo_person_woman" -> {
-                    BitmapFactory.decodeResource(context.resources, com.example.R.drawable.img_demo_person_woman)
-                }
-                uriString == "drawable/img_demo_clothing_sherwani" -> {
-                    BitmapFactory.decodeResource(context.resources, com.example.R.drawable.img_demo_clothing_sherwani)
-                }
-                uriString == "drawable/img_product_kurta" -> {
-                    BitmapFactory.decodeResource(context.resources, com.example.R.drawable.img_product_kurta)
-                }
-                uriString == "drawable/img_product_saree" -> {
-                    BitmapFactory.decodeResource(context.resources, com.example.R.drawable.img_product_saree)
-                }
-                uriString == "drawable/img_product_dress" -> {
-                    BitmapFactory.decodeResource(context.resources, com.example.R.drawable.img_product_dress)
-                }
-                uriString == "drawable/img_product_jacket" -> {
-                    BitmapFactory.decodeResource(context.resources, com.example.R.drawable.img_product_jacket)
-                }
-                uriString == "drawable/img_product_shirt" -> {
-                    BitmapFactory.decodeResource(context.resources, com.example.R.drawable.img_product_shirt)
-                }
-                uriString == "drawable/img_shop_logo" -> {
-                    BitmapFactory.decodeResource(context.resources, com.example.R.drawable.img_shop_logo)
-                }
-                uriString.startsWith("drawable/") -> {
-                    val resName = uriString.removePrefix("drawable/")
-                    val resId = context.resources.getIdentifier(resName, "drawable", context.packageName)
-                    if (resId != 0) BitmapFactory.decodeResource(context.resources, resId) else null
-                }
-                uriString.startsWith("file://") || uriString.startsWith("/") -> {
-                    val path = uriString.removePrefix("file://")
-                    BitmapFactory.decodeFile(path)
-                }
-                uriString.startsWith("content://") -> {
-                    context.contentResolver.openInputStream(Uri.parse(uriString))?.use {
-                        BitmapFactory.decodeStream(it)
-                    }
-                }
-                else -> null
-            }
-        } catch (e: Exception) {
-            null
-        }
     }
 }

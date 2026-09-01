@@ -1,6 +1,8 @@
 package com.example.ui.viewmodel
 
 import android.app.Application
+import android.graphics.Bitmap
+import android.net.Uri
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.data.local.AppDatabase
@@ -39,6 +41,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import java.io.File
+import java.io.FileOutputStream
 import java.util.UUID
 
 sealed interface FitLookScreen {
@@ -128,6 +132,9 @@ class FitLookViewModel(application: Application) : AndroidViewModel(application)
 
     private val _clothingImageUri = MutableStateFlow<String?>("drawable/img_demo_clothing_sherwani")
     val clothingImageUri: StateFlow<String?> = _clothingImageUri.asStateFlow()
+
+    private val _outfitDescription = MutableStateFlow<String>("")
+    val outfitDescription: StateFlow<String> = _outfitDescription.asStateFlow()
 
     private val _selectedFitStyle = MutableStateFlow(FitStyle.REGULAR_FIT)
     val selectedFitStyle: StateFlow<FitStyle> = _selectedFitStyle.asStateFlow()
@@ -232,6 +239,49 @@ class FitLookViewModel(application: Application) : AndroidViewModel(application)
         navigateTo(FitLookScreen.ProductDetail(product))
     }
 
+    fun startTryClothesOnMyPhoto(outfit: String? = null) {
+        _selectedProductForTryOn.value = null
+        if (!outfit.isNullOrBlank()) {
+            _selectedClothingCategory.value = outfit
+            // Auto set smart sample reference garment or description if matching
+            when (outfit) {
+                "Pant + Shirt", "Shirt" -> {
+                    _clothingImageUri.value = "drawable/img_product_shirt"
+                    if (_outfitDescription.value.isBlank()) _outfitDescription.value = "Classic tailored shirt with formal trousers"
+                }
+                "T-Shirt + Jeans" -> {
+                    _clothingImageUri.value = "drawable/img_product_shirt"
+                    if (_outfitDescription.value.isBlank()) _outfitDescription.value = "Casual cotton t-shirt with slim denim jeans"
+                }
+                "Formal Suit" -> {
+                    _clothingImageUri.value = "drawable/img_product_jacket"
+                    if (_outfitDescription.value.isBlank()) _outfitDescription.value = "Midnight blue 3-piece formal suit with tailored blazer"
+                }
+                "Jacket" -> {
+                    _clothingImageUri.value = "drawable/img_product_jacket"
+                    if (_outfitDescription.value.isBlank()) _outfitDescription.value = "Stylish leather bomber jacket"
+                }
+                "Traditional Clothes", "Kurta Pajama" -> {
+                    _clothingImageUri.value = "drawable/img_demo_clothing_sherwani"
+                    if (_outfitDescription.value.isBlank()) _outfitDescription.value = "Royal designer embroidered sherwani"
+                }
+                "Saree" -> {
+                    _clothingImageUri.value = "drawable/img_product_saree"
+                    if (_outfitDescription.value.isBlank()) _outfitDescription.value = "Banarasi silk festive designer saree"
+                }
+                "Dress" -> {
+                    _clothingImageUri.value = "drawable/img_product_dress"
+                    if (_outfitDescription.value.isBlank()) _outfitDescription.value = "Elegant evening dress"
+                }
+            }
+        }
+        if (!privacyService.hasAcceptedConsent()) {
+            _showPrivacyConsentDialog.value = true
+        } else {
+            navigateTo(FitLookScreen.TryOnWizard(1))
+        }
+    }
+
     fun startProductTryOn(product: ProductItem) {
         _selectedProductForTryOn.value = product
         _clothingImageUri.value = product.primaryImageUri
@@ -271,6 +321,23 @@ class FitLookViewModel(application: Application) : AndroidViewModel(application)
         _selectedProductForTryOn.value = null
     }
 
+    fun setOutfitDescription(description: String) {
+        _outfitDescription.value = description
+    }
+
+    fun saveCapturedBitmap(bitmap: Bitmap): String {
+        return try {
+            val cacheDir = getApplication<Application>().cacheDir
+            val cameraFile = File(cacheDir, "camera_photo_${System.currentTimeMillis()}.jpg")
+            FileOutputStream(cameraFile).use { out ->
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 90, out)
+            }
+            Uri.fromFile(cameraFile).toString()
+        } catch (e: Exception) {
+            "drawable/img_demo_person_man"
+        }
+    }
+
     fun selectFitStyle(style: FitStyle) {
         _selectedFitStyle.value = style
     }
@@ -302,6 +369,7 @@ class FitLookViewModel(application: Application) : AndroidViewModel(application)
     fun executeVirtualTryOn() {
         val personUri = _personImageUri.value
         val clothingUri = _clothingImageUri.value
+        val outfitDesc = _outfitDescription.value.trim()
         val currentShop = shopProfile.value
 
         // Check shop available AI credits
@@ -317,10 +385,9 @@ class FitLookViewModel(application: Application) : AndroidViewModel(application)
             return
         }
 
-        // Validate Clothing Image
-        val clothingValidation = imageUploadService.validateClothingImage(clothingUri)
-        if (!clothingValidation.isValid) {
-            showToast(clothingValidation.errorMessage ?: "Please upload a clothing image where the item is clearly visible.")
+        // Validate Clothing: Either clothing image or text description is required
+        if (clothingUri.isNullOrBlank() && outfitDesc.isBlank()) {
+            showToast("Please upload a clothing image or write an outfit description.")
             return
         }
 
@@ -337,7 +404,8 @@ class FitLookViewModel(application: Application) : AndroidViewModel(application)
 
             val result = virtualTryOnService.generateTryOn(
                 personImageUri = personUri!!,
-                clothingImageUri = clothingUri!!,
+                clothingImageUri = clothingUri,
+                outfitDescription = outfitDesc.ifBlank { null },
                 personCategory = _selectedPersonCategory.value,
                 clothingCategory = _selectedClothingCategory.value,
                 fitStyle = _selectedFitStyle.value,
@@ -364,6 +432,7 @@ class FitLookViewModel(application: Application) : AndroidViewModel(application)
             }
         }
     }
+
 
     fun toggleSaveLook(look: TryOnResultData) {
         viewModelScope.launch {

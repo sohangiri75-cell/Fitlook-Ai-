@@ -23,6 +23,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AutoAwesome
+import androidx.compose.material.icons.filled.Checkroom
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Shield
@@ -75,6 +76,7 @@ fun HomeScreen(
     onSelectProduct: (ProductItem) -> Unit = {},
     onViewProfilePrivacy: () -> Unit,
     onSelectQuickCategory: (PersonCategory) -> Unit,
+    onSelectOutfitForTryOn: (String) -> Unit = {},
     onViewLookDetail: (TryOnResultData) -> Unit
 ) {
     Column(
@@ -85,7 +87,7 @@ fun HomeScreen(
     ) {
         FitLookTopBar(
             title = "FITLOOK AI",
-            subtitle = "Try Before You Buy",
+            subtitle = "Try Clothes on My Photo",
             onPrivacyClick = onViewProfilePrivacy
         )
 
@@ -95,7 +97,7 @@ fun HomeScreen(
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = 20.dp, vertical = 6.dp)
         ) {
-            // EDITORIAL HERO BANNER
+            // EDITORIAL HERO BANNER - TRY CLOTHES ON MY PHOTO
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -110,7 +112,7 @@ fun HomeScreen(
                         .fillMaxWidth()
                         .padding(24.dp)
                 ) {
-                    // "AI Ready" Badge
+                    // "AI Clothing Change" Badge
                     Box(
                         modifier = Modifier
                             .clip(RoundedCornerShape(20.dp))
@@ -118,10 +120,10 @@ fun HomeScreen(
                             .padding(horizontal = 12.dp, vertical = 5.dp)
                     ) {
                         Text(
-                            text = "AI READY",
+                            text = "✨ AI CLOTHING CHANGE",
                             style = MaterialTheme.typography.labelSmall.copy(
                                 fontWeight = FontWeight.Black,
-                                letterSpacing = 1.8.sp,
+                                letterSpacing = 1.5.sp,
                                 fontSize = 10.sp
                             ),
                             color = Color.White
@@ -131,7 +133,7 @@ fun HomeScreen(
                     Spacer(modifier = Modifier.height(16.dp))
 
                     Text(
-                        text = "See your\nStyle instantly",
+                        text = "Try Clothes on\nMy Photo",
                         style = MaterialTheme.typography.headlineMedium.copy(
                             fontWeight = FontWeight.Bold,
                             fontSize = 30.sp,
@@ -144,7 +146,7 @@ fun HomeScreen(
                     Spacer(modifier = Modifier.height(8.dp))
 
                     Text(
-                        text = "Kapda kharidne se pehle, khud par dekho.",
+                        text = "Upload your photo • Select Pant, Shirt, Suit, Jacket or Traditional wear • AI dresses you with preserved face & natural fit.",
                         style = MaterialTheme.typography.bodyMedium.copy(
                             fontSize = 14.sp
                         ),
@@ -161,9 +163,9 @@ fun HomeScreen(
                         Button(
                             onClick = onStartTryOn,
                             modifier = Modifier
-                                .weight(1f)
+                                .weight(1.3f)
                                 .height(54.dp)
-                                .testTag("try_an_outfit_button"),
+                                .testTag("try_on_my_photo_hero_button"),
                             shape = RoundedCornerShape(16.dp),
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = EditorialBlue,
@@ -179,10 +181,10 @@ fun HomeScreen(
                             )
                             Spacer(modifier = Modifier.width(6.dp))
                             Text(
-                                text = "TRY OUTFIT",
+                                text = "TRY ON MY PHOTO",
                                 style = MaterialTheme.typography.titleSmall.copy(
                                     fontWeight = FontWeight.Bold,
-                                    letterSpacing = 0.8.sp,
+                                    letterSpacing = 0.6.sp,
                                     fontSize = 13.sp
                                 )
                             )
@@ -215,6 +217,106 @@ fun HomeScreen(
                                     letterSpacing = 0.8.sp,
                                     fontSize = 13.sp
                                 )
+                            )
+                        }
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // POPULAR OUTFIT QUICK TRY-ON
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        imageVector = Icons.Default.Checkroom,
+                        contentDescription = null,
+                        tint = EditorialBlue,
+                        modifier = Modifier.size(18.dp)
+                    )
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text(
+                        text = "TRY CLOTHES ON MY PHOTO",
+                        style = MaterialTheme.typography.labelLarge.copy(
+                            fontWeight = FontWeight.Bold,
+                            letterSpacing = 1.sp,
+                            fontSize = 13.sp
+                        ),
+                        color = EditorialTextDark
+                    )
+                }
+                Text(
+                    text = "Try Now",
+                    style = MaterialTheme.typography.labelMedium.copy(
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 12.sp
+                    ),
+                    color = EditorialBlue,
+                    modifier = Modifier
+                        .clickable { onStartTryOn() }
+                        .padding(4.dp)
+                )
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // Quick Outfit Chips / Cards
+            val popularOutfits = listOf(
+                Pair("Pant + Shirt", "👖👔"),
+                Pair("T-Shirt + Jeans", "👕👖"),
+                Pair("Formal Suit", "🤵"),
+                Pair("Jacket", "🧥"),
+                Pair("Traditional Clothes", "🥻"),
+                Pair("Dress", "👗")
+            )
+
+            LazyRow(
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
+                contentPadding = PaddingValues(bottom = 6.dp)
+            ) {
+                items(popularOutfits) { (outfit, emoji) ->
+                    Card(
+                        modifier = Modifier
+                            .width(135.dp)
+                            .clip(RoundedCornerShape(18.dp))
+                            .clickable {
+                                onSelectOutfitForTryOn(outfit)
+                            }
+                            .testTag("outfit_chip_${outfit.replace(" ", "_")}"),
+                        shape = RoundedCornerShape(18.dp),
+                        colors = CardDefaults.cardColors(containerColor = EditorialCardBg),
+                        border = androidx.compose.foundation.BorderStroke(1.dp, EditorialCardBorder)
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(14.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Text(text = emoji, fontSize = 28.sp)
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Text(
+                                text = outfit,
+                                style = MaterialTheme.typography.labelMedium.copy(
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 12.sp
+                                ),
+                                color = EditorialNavy,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Text(
+                                text = "Try on Photo →",
+                                style = MaterialTheme.typography.labelSmall.copy(
+                                    fontSize = 10.sp,
+                                    fontWeight = FontWeight.SemiBold
+                                ),
+                                color = EditorialBlue
                             )
                         }
                     }

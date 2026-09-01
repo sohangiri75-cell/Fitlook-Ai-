@@ -15,29 +15,36 @@ enum class PersonCategory(
 }
 
 object CategoryCatalog {
+    val standardClothingCategories = listOf(
+        "Pant + Shirt",
+        "T-Shirt + Jeans",
+        "Formal Suit",
+        "Jacket",
+        "Traditional Clothes",
+        "Kurta Pajama",
+        "Dress",
+        "Saree",
+        "Custom Outfit"
+    )
+
     val menClothing = listOf(
-        "Shirt", "T-Shirt", "Jeans", "Trousers", "Kurta",
-        "Suit", "Sherwani", "Jacket", "Shorts", "Traditional Wear", "Party Wear"
+        "Pant + Shirt", "T-Shirt + Jeans", "Formal Suit", "Jacket", "Traditional Clothes", "Kurta Pajama", "Shirt", "T-Shirt", "Jeans", "Trousers", "Custom Outfit"
     )
 
     val womenClothing = listOf(
-        "Saree", "Kurti", "Salwar Suit", "Top", "Jeans",
-        "Dress", "Skirt", "Lehenga", "Blazer", "Jacket", "Traditional Wear", "Party Wear"
+        "Dress", "Saree", "Traditional Clothes", "Formal Suit", "Jacket", "T-Shirt + Jeans", "Pant + Shirt", "Kurti", "Lehenga", "Custom Outfit"
     )
 
     val girlsClothing = listOf(
-        "Top", "Jeans", "Dress", "Skirt", "Kurti",
-        "Salwar Suit", "Lehenga", "Jacket", "Party Wear", "Traditional Wear"
+        "Dress", "Traditional Clothes", "T-Shirt + Jeans", "Jacket", "Pant + Shirt", "Kurti", "Lehenga", "Custom Outfit"
     )
 
     val boysClothing = listOf(
-        "Shirt", "T-Shirt", "Jeans", "Trousers", "Shorts",
-        "Kurta", "Jacket", "Party Wear", "Traditional Wear"
+        "Pant + Shirt", "T-Shirt + Jeans", "Formal Suit", "Jacket", "Traditional Clothes", "Kurta Pajama", "Custom Outfit"
     )
 
     val childrenClothing = listOf(
-        "Shirt", "T-Shirt", "Jeans", "Trousers", "Shorts",
-        "Dress", "Traditional Wear", "Party Wear"
+        "T-Shirt + Jeans", "Pant + Shirt", "Dress", "Jacket", "Traditional Clothes", "Custom Outfit"
     )
 
     fun getClothingCategoriesFor(personCategory: PersonCategory): List<String> {
@@ -50,3 +57,4 @@ object CategoryCatalog {
         }
     }
 }
+

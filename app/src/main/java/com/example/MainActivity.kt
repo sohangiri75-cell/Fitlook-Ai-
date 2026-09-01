@@ -77,6 +77,7 @@ fun FitLookApp(viewModel: FitLookViewModel) {
     val selectedClothingCategory by viewModel.selectedClothingCategory.collectAsState()
     val personImageUri by viewModel.personImageUri.collectAsState()
     val clothingImageUri by viewModel.clothingImageUri.collectAsState()
+    val outfitDescription by viewModel.outfitDescription.collectAsState()
     val selectedFitStyle by viewModel.selectedFitStyle.collectAsState()
     val tryOnStage by viewModel.tryOnStage.collectAsState()
     val showPrivacyDialog by viewModel.showPrivacyConsentDialog.collectAsState()
@@ -158,14 +159,17 @@ fun FitLookApp(viewModel: FitLookViewModel) {
                             currentUser = currentUser,
                             recentLooks = allLooks,
                             featuredProducts = shopProducts,
-                            onStartTryOn = { viewModel.startTryOnWizard() },
+                            onStartTryOn = { viewModel.startTryClothesOnMyPhoto() },
                             onViewMyLooks = { viewModel.navigateTo(FitLookScreen.MyLooks) },
                             onViewCatalogue = { viewModel.navigateTo(FitLookScreen.ProductCatalogue) },
                             onSelectProduct = { prod -> viewModel.viewProductDetail(prod) },
                             onViewProfilePrivacy = { viewModel.navigateTo(FitLookScreen.ProfilePrivacy) },
                             onSelectQuickCategory = { cat ->
                                 viewModel.selectPersonCategory(cat)
-                                viewModel.startTryOnWizard()
+                                viewModel.startTryClothesOnMyPhoto()
+                            },
+                            onSelectOutfitForTryOn = { outfit ->
+                                viewModel.startTryClothesOnMyPhoto(outfit)
                             },
                             onViewLookDetail = { look ->
                                 viewModel.navigateTo(FitLookScreen.Result(look))
@@ -204,12 +208,15 @@ fun FitLookApp(viewModel: FitLookViewModel) {
                             selectedClothingCategory = selectedClothingCategory,
                             personImageUri = personImageUri,
                             clothingImageUri = clothingImageUri,
+                            outfitDescription = outfitDescription,
                             selectedFitStyle = selectedFitStyle,
                             onSelectPersonCategory = { cat -> viewModel.selectPersonCategory(cat) },
                             onSelectClothingCategory = { clothing -> viewModel.selectClothingCategory(clothing) },
                             onSetPersonImage = { uri -> viewModel.setPersonImage(uri) },
                             onSetClothingImage = { uri -> viewModel.setClothingImage(uri) },
+                            onSetOutfitDescription = { desc -> viewModel.setOutfitDescription(desc) },
                             onSelectFitStyle = { fit -> viewModel.selectFitStyle(fit) },
+                            onSaveCameraBitmap = { bitmap -> viewModel.saveCapturedBitmap(bitmap) },
                             onNavigateStep = { step -> viewModel.navigateTo(FitLookScreen.TryOnWizard(step)) },
                             onExecuteTryOn = { viewModel.executeVirtualTryOn() },
                             onBackClick = { viewModel.navigateTo(FitLookScreen.Home) }
